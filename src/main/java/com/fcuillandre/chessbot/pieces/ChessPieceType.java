@@ -1,11 +1,14 @@
 package com.fcuillandre.chessbot.pieces;
 
+import lombok.Getter;
+
 /**
  * Enum representing the different types of chess pieces.
  * Each piece type has a short name used in chess notation.
  *
  * @author fcuillan
  */
+@Getter
 public enum ChessPieceType {
 
     ROOK("R"),
@@ -19,9 +22,5 @@ public enum ChessPieceType {
 
     ChessPieceType(String r) {
         this.shortName = r;
-    }
-
-    public String getShortName() {
-        return shortName;
     }
 }

@@ -1,21 +1,30 @@
 package com.fcuillandre.chessbot.game;
 
-public class Move {
-    private final int startX;
-    private final int startY;
-    private final int endX;
-    private final int endY;
+import lombok.Getter;
 
-    public Move(int startX, int startY, int endX, int endY) {
-        this.startX = startX;
-        this.startY = startY;
-        this.endX = endX;
-        this.endY = endY;
+/**
+ * Represents a move in a chess game, defined by starting and ending coordinates.
+ * This class is immutable and provides methods to access the coordinates of the move.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
+@Getter
+public final class Move {
+
+    private final Coordinate start;
+    private final Coordinate end;
+
+    /**
+     * Constructs a Move object with specified start and end coordinates.
+     *
+     * @param start the starting coordinate of the move
+     * @param end   the ending coordinate of the move
+     */
+    public Move(Coordinate start, Coordinate end) {
+        this.start = start;
+        this.end = end;
     }
 
-    public int getStartX() { return startX; }
-    public int getStartY() { return startY; }
-    public int getEndX() { return endX; }
-    public int getEndY() { return endY; }
 }
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RookMoveTest {
+class RookMoveTest {
 
     @Test
     void test_that_move_A1A3_is_valid_for_white_when_pawns_have_moved() {

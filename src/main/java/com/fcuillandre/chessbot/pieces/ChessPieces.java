@@ -1,5 +1,13 @@
 package com.fcuillandre.chessbot.pieces;
 
+/**
+ * This class provides static instances of all chess pieces for both colors.
+ * It includes pieces for white and black, such as rooks, knights, bishops, queens, kings, and pawns.
+ * Each piece is represented by a `ChessPiece` object with its color and type.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
 public final class ChessPieces {
 
     public static final ChessPiece WHITE_ROOK = new ChessPiece(ChessColor.WHITE, ChessPieceType.ROOK);

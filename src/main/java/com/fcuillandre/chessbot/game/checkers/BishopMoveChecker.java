@@ -1,17 +1,22 @@
-package com.fcuillandre.chessbot.pieces;
+package com.fcuillandre.chessbot.game.checkers;
 
 import com.fcuillandre.chessbot.board.ChessBoard;
+import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Move;
+import com.fcuillandre.chessbot.pieces.ChessPiece;
 
-public final class BishopMoveChecker implements MoveChecker {
+/**
+ * Checks if a bishop's move is valid.
+ * The bishop moves only diagonally and cannot jump over other pieces.
+ * It can capture an opponent's piece by moving onto its square.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
+public final class BishopMoveChecker extends AbstractMoveChecker {
 
     @Override
-    public boolean isValidMove(ChessPiece piece, Move move, ChessBoard board) {
-        if (piece == null) return false;
-        int startX = move.getStartX();
-        int startY = move.getStartY();
-        int endX = move.getEndX();
-        int endY = move.getEndY();
+    public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
         // Le fou se déplace uniquement en diagonale
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);

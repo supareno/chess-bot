@@ -54,4 +54,28 @@ class PawnMoveTest {
         // e4-e5 est un coup valide au début
         assertTrue(chessGame.isValidMove(3, 3, 4, 3)); // e4 vers e5
     }
+
+    /*
+    e2 e4
+    e7 e5
+    g1 f3
+    b8 c6
+    d2 d4
+     */
+    @Test
+    void test_that_move_D2D4_for_white_is_a_valid_fifth_move() {
+        ChessGame chessGame = new ChessGame();
+        chessGame.startGame();
+        // 1
+        chessGame.makeMove("e2", "e4"); // e2 e4 pour les blancs
+        chessGame.makeMove("e7", "e5"); // e7 e5 pour les noirs
+
+        // 2
+        chessGame.makeMove("g1", "f3"); // g1 f3 pour les blancs
+        chessGame.makeMove("b8", "c6"); // b8 c6 pour les noirs
+
+        // 3
+        chessGame.makeMove("d2", "d4"); // d2 d4 pour les blancs
+        assertFalse(chessGame.isWhiteTurn()); // e4 vers e5
+    }
 }

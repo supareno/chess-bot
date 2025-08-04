@@ -1,24 +1,23 @@
-package com.fcuillandre.chessbot.pieces;
+package com.fcuillandre.chessbot.game.checkers;
 
 import com.fcuillandre.chessbot.board.ChessBoard;
+import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Move;
+import com.fcuillandre.chessbot.pieces.ChessPiece;
 
-public final class RookMoveChecker implements MoveChecker {
-    /**
-     * Vérifie si le mouvement d'une tour est valide.
-     *
-     * @param piece  La tour à déplacer.
-     * @param move   Le mouvement à effectuer.
-     * @param board  Le plateau de jeu.
-     * @return true si le mouvement est valide, false sinon.
-     */
+/**
+ * Vérifie si le mouvement d'une tour est valide.
+ * La tour se déplace uniquement en ligne droite (horizontal ou vertical) et ne peut pas sauter par-dessus d'autres pièces.
+ * Elle peut capturer une pièce adverse en se déplaçant sur sa case.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
+public final class RookMoveChecker extends AbstractMoveChecker {
+
     @Override
-    public boolean isValidMove(ChessPiece piece, Move move, ChessBoard board) {
-        if (piece == null) return false;
-        int startX = move.getStartX();
-        int startY = move.getStartY();
-        int endX = move.getEndX();
-        int endY = move.getEndY();
+    public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
+
         // La tour se déplace uniquement en ligne droite (horizontal ou vertical)
         if (startX != endX && startY != endY) return false;
         // Vérifie qu'il n'y a pas d'obstacle sur le chemin

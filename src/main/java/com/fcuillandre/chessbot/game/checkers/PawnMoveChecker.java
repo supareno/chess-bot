@@ -1,7 +1,10 @@
-package com.fcuillandre.chessbot.pieces;
+package com.fcuillandre.chessbot.game.checkers;
 
 import com.fcuillandre.chessbot.board.ChessBoard;
 import com.fcuillandre.chessbot.game.Move;
+import com.fcuillandre.chessbot.game.ChessGame;
+import com.fcuillandre.chessbot.pieces.ChessPiece;
+import com.fcuillandre.chessbot.utils.ChessUtils;
 
 import static com.fcuillandre.chessbot.pieces.ChessColor.WHITE;
 
@@ -15,23 +18,11 @@ import static com.fcuillandre.chessbot.pieces.ChessColor.WHITE;
  * </p>
  * @author fcuillan
  */
-public final class PawnMoveChecker implements MoveChecker {
+public final class PawnMoveChecker extends AbstractMoveChecker {
 
-    /**
-     * Vérifie si le mouvement d'un pion est valide.
-     *
-     * @param piece  Le pion à déplacer.
-     * @param move   Le mouvement à effectuer.
-     * @param board  Le plateau de jeu.
-     * @return true si le mouvement est valide, false sinon.
-     */
     @Override
-    public boolean isValidMove(ChessPiece piece, Move move, ChessBoard board) {
-        if (piece == null) return false;
-        int startX = move.getStartX();
-        int startY = move.getStartY();
-        int endX = move.getEndX();
-        int endY = move.getEndY();
+    public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
+
         // Vérifie la couleur du pion
         boolean isWhite = piece.getColor() == WHITE;
         int direction = isWhite ? -1 : 1;
@@ -39,10 +30,11 @@ public final class PawnMoveChecker implements MoveChecker {
         if (startY == endY && startX - endX == direction && board.getPieceAt(endX,endY) == null) {
             return true;
         }
+
         // Premier déplacement de deux cases
         if (startY == endY && ((isWhite && startX == 1) || (!isWhite && startX == 6))
                 && Math.abs(endX - startX) == Math.abs(2 * direction)
-                && board.getPieceAt(endX,startY + direction) == null
+                && board.getPieceAt(endX + direction,startY) == null
                 && board.getPieceAt(endX,endY) == null) {
             return true;
         }
