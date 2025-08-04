@@ -1,0 +1,19 @@
+package com.fcuillandre.chessbot.pieces;
+
+public final class ChessPieces {
+
+    public static final ChessPiece WHITE_ROOK = new ChessPiece(ChessColor.WHITE, ChessPieceType.ROOK);
+    public static final ChessPiece WHITE_KNIGHT = new ChessPiece(ChessColor.WHITE, ChessPieceType.KNIGHT);
+    public static final ChessPiece WHITE_BISHOP = new ChessPiece(ChessColor.WHITE, ChessPieceType.BISHOP);
+    public static final ChessPiece WHITE_QUEEN = new ChessPiece(ChessColor.WHITE, ChessPieceType.QUEEN);
+    public static final ChessPiece WHITE_KING = new ChessPiece(ChessColor.WHITE, ChessPieceType.KING);
+    public static final ChessPiece WHITE_PAWN = new ChessPiece(ChessColor.WHITE, ChessPieceType.PAWN);
+
+    public static final ChessPiece BLACK_ROOK = new ChessPiece(ChessColor.BLACK, ChessPieceType.ROOK);
+    public static final ChessPiece BLACK_KNIGHT = new ChessPiece(ChessColor.BLACK, ChessPieceType.KNIGHT);
+    public static final ChessPiece BLACK_BISHOP = new ChessPiece(ChessColor.BLACK, ChessPieceType.BISHOP);
+    public static final ChessPiece BLACK_QUEEN = new ChessPiece(ChessColor.BLACK, ChessPieceType.QUEEN);
+    public static final ChessPiece BLACK_KING = new ChessPiece(ChessColor.BLACK, ChessPieceType.KING);
+    public static final ChessPiece BLACK_PAWN = new ChessPiece(ChessColor.BLACK, ChessPieceType.PAWN);
+
+}
