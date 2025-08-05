@@ -23,14 +23,12 @@ public class ChessGame {
     private boolean blackQueensideRookMoved = false;
 
     public ChessGame() {
-        board = new ChessBoard();// ChessUtils.initializeBoard();
+        board = new ChessBoard();
     }
 
     public boolean isValidMove(Move move) {
         int startX = move.getStart().getX();
         int startY = move.getStart().getY();
-        int endX = move.getEnd().getX();
-        int endY = move.getEnd().getY();
         ChessPiece piece = this.board.getPieceAt(startX, startY);
         if (piece == null) {
             ChessUtils.log("No piece at starting position: " + this.board.getCaseAt(startX, startY));
@@ -40,9 +38,6 @@ public class ChessGame {
             ChessUtils.log("It's not your turn to move this piece: " + piece);
             return false;
         }
-        ChessUtils.log("Validating move for piece: " + piece + " from "
-                + this.board.getCaseAt(startX, startY) + "(x: " + startX + ", y: " + startY + ") "
-                + "to " + this.board.getCaseAt(endX, endY) +" (x: " + endX + ", y: " + endY + ")");
 
         return getMoveChecker(piece).isValidMove(piece, move, board, this);
     }
