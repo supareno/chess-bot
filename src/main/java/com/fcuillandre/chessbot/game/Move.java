@@ -1,5 +1,6 @@
 package com.fcuillandre.chessbot.game;
 
+import com.fcuillandre.chessbot.board.ChessCaseEnumeration;
 import lombok.Getter;
 
 /**
@@ -14,6 +15,16 @@ public final class Move {
 
     private final Coordinate start;
     private final Coordinate end;
+
+    /**
+     * Constructs a Move object with specified start and end chess cases.
+     *
+     * @param start the starting chess case of the move
+     * @param end   the ending chess case of the move
+     */
+    public Move(ChessCaseEnumeration start, ChessCaseEnumeration end) {
+        this(start.getCoordinate(), end.getCoordinate());
+    }
 
     /**
      * Constructs a Move object with specified start and end coordinates.

@@ -1,81 +1,80 @@
 package com.chessbot.com.fcuillandre;
 
 import com.fcuillandre.chessbot.game.ChessGame;
+import com.fcuillandre.chessbot.game.Move;
 import org.junit.jupiter.api.Test;
+
+import static com.fcuillandre.chessbot.board.ChessCaseEnumeration.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PawnMoveTest {
 
-    // Vérifie que e6-e5 n'est pas un coup valide au début de la partie pour les noirs
-    // il faut avant faire le coup e2-e4 pour les blancs
+
     @Test
     void test_that_move_E6E5_is_not_a_valid_first_move_for_black() {
         ChessGame chessGame = new ChessGame();
         chessGame.startGame();
-        chessGame.makeMove(1,3, 3, 3); // e2 e4 pour les blancs
-        // e6-e5 n'est pas un coup valide au début
-        assertFalse(chessGame.isValidMove(5, 3, 4, 3)); // e6 vers e5
+        chessGame.makeMove("e2", "e4");
+        assertFalse(chessGame.isValidMove(new Move(E6, E5))); // e6 vers e5
     }
 
     @Test
     void test_that_move_E7E4_is_not_a_valid_first_move_for_black() {
         ChessGame chessGame = new ChessGame();
         chessGame.startGame();
-        chessGame.makeMove(1,3, 3, 3); // e2 e4 pour les blancs
-        // e6-e5 n'est pas un coup valide au début
-        assertFalse(chessGame.isValidMove(6, 3, 3, 3)); // e7 vers e4
+        chessGame.makeMove("e2", "e4");
+        assertFalse(chessGame.isValidMove(new Move(E7, E4))); // e7 vers e4
     }
 
     @Test
     void test_that_move_E7E5_is_a_valid_first_move_for_black() {
         ChessGame chessGame = new ChessGame();
         chessGame.startGame();
-        chessGame.makeMove(1,3, 3, 3); // e2 e4 pour les blancs
-        // e7-e5 est un coup valide au début
-        assertTrue(chessGame.isValidMove(6, 3, 4, 3)); // e7 vers e5
+        chessGame.makeMove("e2", "e4");
+        assertTrue(chessGame.isValidMove(new Move(E7, E5)));
     }
 
     @Test
     void test_that_move_E7E6_is_a_valid_first_move_for_black() {
         ChessGame chessGame = new ChessGame();
         chessGame.startGame();
-        chessGame.makeMove(1,3, 3, 3); // e2 e4 pour les blancs
-        // e7-e5 est un coup valide au début
-        assertTrue(chessGame.isValidMove(6, 3, 5, 3)); // e7 vers e6
+        chessGame.makeMove("e2", "e4");
+        assertTrue(chessGame.isValidMove(new Move(E7, E6)));
     }
 
 
     @Test
-    void test_that_move_E4E5_for_white_is_a_valid_first_move_for_black() {
+    void test_that_move_E4E5_for_white_is_a_valid_move() {
         ChessGame chessGame = new ChessGame();
         chessGame.startGame();
-        chessGame.makeMove(1,3, 3, 3); // e2 e4 pour les blancs
-        chessGame.makeMove(6,3, 5, 3); // e7 e5 pour les noirs
-        // e4-e5 est un coup valide au début
-        assertTrue(chessGame.isValidMove(3, 3, 4, 3)); // e4 vers e5
+        chessGame.makeMove("e2", "e4");
+        chessGame.makeMove("e7", "e6");
+        assertTrue(chessGame.isValidMove(new Move(E4, E5)));
     }
 
-    /*
-    e2 e4
-    e7 e5
-    g1 f3
-    b8 c6
-    d2 d4
-     */
     @Test
     void test_that_move_D2D4_for_white_is_a_valid_fifth_move() {
         ChessGame chessGame = new ChessGame();
         chessGame.startGame();
         // 1
-        chessGame.makeMove("e2", "e4"); // e2 e4 pour les blancs
-        chessGame.makeMove("e7", "e5"); // e7 e5 pour les noirs
+        chessGame.makeMove("e2", "e4");
+        chessGame.makeMove("e7", "e5");
 
         // 2
-        chessGame.makeMove("g1", "f3"); // g1 f3 pour les blancs
-        chessGame.makeMove("b8", "c6"); // b8 c6 pour les noirs
+        chessGame.makeMove("g1", "f3");
+        chessGame.makeMove("b8", "c6");
 
         // 3
-        chessGame.makeMove("d2", "d4"); // d2 d4 pour les blancs
-        assertFalse(chessGame.isWhiteTurn()); // e4 vers e5
+        chessGame.makeMove("d2", "d4");
+        assertFalse(chessGame.isWhiteTurn());
+    }
+
+    @Test
+    void test_that_a_pawn_can_capture_an_opponent_piece() {
+        ChessGame chessGame = new ChessGame();
+        chessGame.startGame();
+        chessGame.makeMove("e2", "e4");
+        chessGame.makeMove("d7", "d5");
+        assertTrue(chessGame.isValidMove(new Move(E4, D5))); // Black pawn can capture white pawn on d5
     }
 }

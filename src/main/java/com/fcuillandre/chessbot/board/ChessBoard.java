@@ -16,6 +16,10 @@ public class ChessBoard {
         this.cases = ChessUtils.initializeCases();
     }
 
+    public ChessPiece getPieceAt(ChessCaseEnumeration chessCase) {
+        return getPieceAt(chessCase.getCoordinate().getX(), chessCase.getCoordinate().getY());
+    }
+
     public ChessPiece getPieceAt(int x, int y) {
         if (x < 0 || x >= 8 || y < 0 || y >= 8) {
             throw new IndexOutOfBoundsException("Coordinates out of bounds: (" + x + ", " + y + ")");

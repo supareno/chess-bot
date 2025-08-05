@@ -39,7 +39,7 @@ public final class PawnMoveChecker extends AbstractMoveChecker {
             return true;
         }
         // Prise en diagonale
-        if (Math.abs(endX - startX) == 1 && endY - startY == direction
+        if (Math.abs(endX - startX) == 1 && startY - endY == direction
                 && board.getPieceAt(endX,endY) != null
                 && board.getPieceAt(endX,endY).getColor() != piece.getColor()) {
             return true;

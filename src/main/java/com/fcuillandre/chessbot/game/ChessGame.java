@@ -47,11 +47,6 @@ public class ChessGame {
         return getMoveChecker(piece).isValidMove(piece, move, board, this);
     }
 
-    // Pour compatibilité descendante
-    public boolean isValidMove(int startX, int startY, int endX, int endY) {
-        return isValidMove(new Move(new Coordinate(startX, startY), new Coordinate(endX, endY)));
-    }
-
     private MoveChecker getMoveChecker(ChessPiece piece) {
         // Here you would return the appropriate MoveChecker based on the piece type
         if (piece == null) {

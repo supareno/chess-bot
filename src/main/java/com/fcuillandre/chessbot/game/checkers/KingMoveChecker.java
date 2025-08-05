@@ -24,13 +24,13 @@ public final class KingMoveChecker extends AbstractMoveChecker {
             return dest == null || dest.getColor() != piece.getColor();
         }
         // Gestion du roque
-        if (dy == 0 && dx == 2) {
+        if (dy == 2 && dx == 0) {
             boolean isWhite = piece.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE;
             boolean kingMoved = isWhite ? game.hasWhiteKingMoved() : game.hasBlackKingMoved();
-            boolean kingside = endX > startX;
+            boolean kingside = endY > startY;
             boolean rookMoved = false;
-            int rookY = isWhite ? 0 : 7;
-            int rookX = kingside ? 7 : 0;
+            int rookX = isWhite ? 0 : 7;
+            int rookY = kingside ? 7 : 0;
             if (isWhite) {
                 rookMoved = kingside ? game.hasWhiteKingsideRookMoved() : game.hasWhiteQueensideRookMoved();
             } else {
@@ -39,10 +39,10 @@ public final class KingMoveChecker extends AbstractMoveChecker {
             // Le roi et la tour ne doivent pas avoir bougé
             if (kingMoved || rookMoved) return false;
             // Les cases entre le roi et la tour doivent être libres
-            int min = Math.min(startX, rookX) + 1;
-            int max = Math.max(startX, rookX) - 1;
+            int min = Math.min(startY, rookY) + 1;
+            int max = Math.max(startY, rookY) - 1;
             for (int x = min; x <= max; x++) {
-                if (board.getPieceAt(x, rookY) != null) return false;
+                if (board.getPieceAt(rookX, x) != null) return false;
             }
             // La case d'arrivée doit être libre
             if (board.getPieceAt(endX, endY) != null) return false;
