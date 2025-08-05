@@ -81,8 +81,22 @@ public class ChessGame {
         if (isValidMove(move)) {
             ChessUtils.log("Move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is a valid move");
             ChessUtils.log("---");
-            this.board.move(move);
             ChessPiece piece = this.board.getPieceAt(startX, startY);
+            boolean isKing = piece != null && piece.getType() == ChessPieceType.KING;
+            boolean isCastling = isKing && Math.abs(endY - startY) == 2 && startX == endX;
+
+            this.board.move(move);
+
+            if (isCastling) {
+                // Déplacement de la tour lors du roque
+                boolean kingside = endY < startY;
+                int rookStartY = kingside ? 0 : 7;
+                int rookEndY = kingside ? endY + 1 : endY - 1;
+                this.board.move(
+                        new Move(
+                                new Coordinate(startX, rookStartY),
+                                new Coordinate(startX, rookEndY)));
+            }
             if (piece != null) {
                 // Suivi du premier mouvement du roi et des tours
                 if (piece.getType() == ChessPieceType.KING) {
@@ -105,13 +119,8 @@ public class ChessGame {
         }
     }
 
-    // Pour compatibilité descendante
-    public void makeMove(int startX, int startY, int endX, int endY) {
-        makeMove(new Move(new Coordinate(startX, startY), new Coordinate(endX, endY)));
-    }
 
     public void makeMove(String from, String to) {
-        //ChessUtils.log("Making move from " + from + " to " + to);
         ChessCaseEnumeration caseEnumFrom = ChessCaseEnumeration.valueOf(from.toUpperCase());
         ChessCaseEnumeration caseEnumTo = ChessCaseEnumeration.valueOf(to.toUpperCase());
         this.makeMove(new Move(caseEnumFrom.getCoordinate(), caseEnumTo.getCoordinate()));
