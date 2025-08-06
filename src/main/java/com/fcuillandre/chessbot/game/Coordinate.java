@@ -16,4 +16,8 @@ public final class Coordinate {
         this.y = y;
     }
 
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", x, y);
+    }
 }

@@ -14,8 +14,11 @@ public class App {
 
         Scanner scanner = new Scanner(System.in);
 
-        game.startGame();
-        while (!game.isGameOver()) {
+        //game.startGame();
+
+        new com.fcuillandre.chessbot.ui.ChessGameFrame(game);
+
+        /*while (!game.isGameOver()) {
             //bot.makeMove(game);
             game.displayBoard();
 
@@ -35,6 +38,8 @@ public class App {
         scanner.close();
 
         ChessUtils.log("Game Over!");
+        */
+
     }
 
     // private method to check if the move is a valid move that respect pgn notation
