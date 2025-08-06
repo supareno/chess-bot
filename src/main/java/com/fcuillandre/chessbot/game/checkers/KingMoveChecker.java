@@ -1,5 +1,6 @@
 package com.fcuillandre.chessbot.game.checkers;
 
+import com.fcuillandre.chessbot.board.ChessBoard;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Move;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
@@ -15,7 +16,11 @@ public final class KingMoveChecker extends AbstractMoveChecker {
 
     @Override
     public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
-
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessBoard board = game.getBoard();
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
         // Mouvement normal du roi
@@ -24,7 +29,7 @@ public final class KingMoveChecker extends AbstractMoveChecker {
             return dest == null || dest.getColor() != piece.getColor();
         }
         // Gestion du roque
-        if (dy == 2 && dx == 0) {
+        if (dx == 0 && dy == 2) {
             boolean isWhite = piece.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE;
             boolean kingMoved = isWhite ? game.hasWhiteKingMoved() : game.hasBlackKingMoved();
             boolean kingside = endY > startY;
@@ -41,8 +46,8 @@ public final class KingMoveChecker extends AbstractMoveChecker {
             // Les cases entre le roi et la tour doivent être libres
             int min = Math.min(startY, rookY) + 1;
             int max = Math.max(startY, rookY) - 1;
-            for (int x = min; x <= max; x++) {
-                if (board.getPieceAt(rookX, x) != null) return false;
+            for (int y = min; y <= max; y++) {
+                if (board.getPieceAt(rookX, y) != null) return false;
             }
             // La case d'arrivée doit être libre
             if (board.getPieceAt(endX, endY) != null) return false;

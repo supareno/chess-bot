@@ -17,7 +17,11 @@ public final class RookMoveChecker extends AbstractMoveChecker {
 
     @Override
     public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
-
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessBoard board = game.getBoard();
         // La tour se déplace uniquement en ligne droite (horizontal ou vertical)
         if (startX != endX && startY != endY) return false;
         // Vérifie qu'il n'y a pas d'obstacle sur le chemin
@@ -25,16 +29,16 @@ public final class RookMoveChecker extends AbstractMoveChecker {
             int minY = Math.min(startY, endY) + 1;
             int maxY = Math.max(startY, endY);
             for (int y = minY; y < maxY; y++) {
-                if (board.getPieceAt(startX,y) != null) return false;
+                if (board.getPieceAt(startX, y) != null) return false;
             }
         } else {
             int minX = Math.min(startX, endX) + 1;
             int maxX = Math.max(startX, endX);
             for (int x = minX; x < maxX; x++) {
-                if (board.getPieceAt(x,startY) != null) return false;
+                if (board.getPieceAt(x, startY) != null) return false;
             }
         }
         // Vérifie la case d'arrivée
-        return board.getPieceAt(endX,endY) == null || board.getPieceAt(endX,endY).getColor() != piece.getColor();
+        return board.getPieceAt(endX, endY) == null || board.getPieceAt(endX, endY).getColor() != piece.getColor();
     }
 }

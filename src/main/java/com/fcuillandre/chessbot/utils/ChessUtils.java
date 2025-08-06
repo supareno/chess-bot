@@ -17,8 +17,8 @@ public class ChessUtils {
         board[0][0] = WHITE_ROOK; // Rook
         board[0][1] = WHITE_KNIGHT; // Knight
         board[0][2] = WHITE_BISHOP; // Bishop
-        board[0][3] = WHITE_KING; // Queen
-        board[0][4] = WHITE_QUEEN; // King
+        board[0][3] = WHITE_QUEEN; // Queen
+        board[0][4] = WHITE_KING; // King
         board[0][5] = WHITE_BISHOP; // Bishop
         board[0][6] = WHITE_KNIGHT; // Knight
         board[0][7] = WHITE_ROOK; // Rook
@@ -29,8 +29,8 @@ public class ChessUtils {
         board[7][0] = BLACK_ROOK; // Rook
         board[7][1] = BLACK_KNIGHT; // Knight
         board[7][2] = BLACK_BISHOP; // Bishop
-        board[7][3] = BLACK_KING; // Queen
-        board[7][4] = BLACK_QUEEN; // King
+        board[7][3] = BLACK_QUEEN; // Queen
+        board[7][4] = BLACK_KING; // King
         board[7][5] = BLACK_BISHOP; // Bishop
         board[7][6] = BLACK_KNIGHT; // Knight
         board[7][7] = BLACK_ROOK; // Rook
@@ -41,12 +41,17 @@ public class ChessUtils {
     }
 
     public static void printBoard(ChessPiece[][] board) {
-        for (ChessPiece[] row : board) {
-            for (ChessPiece piece : row) {
+
+        for (int i = 7; i >= 0; i--) {
+            System.out.print((i + 1) + " | ");
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = board[i][j];
                 System.out.print((piece != null ? piece : ".") + " ");
             }
             System.out.println();
         }
+        System.out.println("   -----------------");
+        System.out.println("    A B C D E F G H");
         System.out.println("---- ---- ---- ---- ---- ---- ---- ----");
     }
 

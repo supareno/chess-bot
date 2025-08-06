@@ -18,7 +18,11 @@ public final class QueenMoveChecker extends AbstractMoveChecker {
 
     @Override
     public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
-
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessBoard board = game.getBoard();
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
         // Mouvement en ligne droite (tour)

@@ -22,26 +22,28 @@ public final class PawnMoveChecker extends AbstractMoveChecker {
 
     @Override
     public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
-
-        // Vérifie la couleur du pion
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessBoard board = game.getBoard();
         boolean isWhite = piece.getColor() == WHITE;
-        int direction = isWhite ? -1 : 1;
+        int direction = isWhite ? 1 : -1;
         // Déplacement simple d'une case
-        if (startY == endY && startX - endX == direction && board.getPieceAt(endX,endY) == null) {
+        if (startY == endY && endX - startX == direction && board.getPieceAt(endX, endY) == null) {
             return true;
         }
-
         // Premier déplacement de deux cases
         if (startY == endY && ((isWhite && startX == 1) || (!isWhite && startX == 6))
-                && Math.abs(endX - startX) == Math.abs(2 * direction)
-                && board.getPieceAt(endX + direction,startY) == null
-                && board.getPieceAt(endX,endY) == null) {
+                && endX - startX == 2 * direction
+                && board.getPieceAt(startX + direction, startY) == null
+                && board.getPieceAt(endX, endY) == null) {
             return true;
         }
         // Prise en diagonale
-        if (Math.abs(endX - startX) == 1 && startY - endY == direction
-                && board.getPieceAt(endX,endY) != null
-                && board.getPieceAt(endX,endY).getColor() != piece.getColor()) {
+        if (Math.abs(endY - startY) == 1 && endX - startX == direction
+                && board.getPieceAt(endX, endY) != null
+                && board.getPieceAt(endX, endY).getColor() != piece.getColor()) {
             return true;
         }
         return false;

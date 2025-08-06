@@ -17,6 +17,11 @@ public final class BishopMoveChecker extends AbstractMoveChecker {
 
     @Override
     public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessBoard board = game.getBoard();
         // Le fou se déplace uniquement en diagonale
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
@@ -26,11 +31,11 @@ public final class BishopMoveChecker extends AbstractMoveChecker {
         int x = startX + stepX;
         int y = startY + stepY;
         while (x != endX && y != endY) {
-            if (board.getPieceAt(x,y) != null) return false;
+            if (board.getPieceAt(x, y) != null) return false;
             x += stepX;
             y += stepY;
         }
         // Vérifie la case d'arrivée
-        return board.getPieceAt(endX,endY) == null || board.getPieceAt(endX,endY).getColor() != piece.getColor();
+        return board.getPieceAt(endX, endY) == null || board.getPieceAt(endX, endY).getColor() != piece.getColor();
     }
 }

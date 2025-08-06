@@ -16,7 +16,11 @@ public class KnightMoveChecker extends AbstractMoveChecker {
 
     @Override
     public boolean customIsValidMove(ChessPiece piece, Move move, ChessGame game) {
-
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessBoard board = game.getBoard();
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
         // Le cavalier se déplace en L : 2 cases dans une direction, 1 dans l'autre
