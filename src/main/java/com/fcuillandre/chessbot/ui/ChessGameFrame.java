@@ -23,12 +23,24 @@ public class ChessGameFrame extends JFrame {
         this.boardPanel = new ChessBoardPanel(game.getBoard());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        // Fixer la taille du plateau de jeu
+        boardPanel.setPreferredSize(new Dimension(600, 600));
+        boardPanel.setMinimumSize(new Dimension(600, 600));
+        boardPanel.setMaximumSize(new Dimension(600, 600));
         add(boardPanel, BorderLayout.CENTER);
+        // Fixer la taille de la liste des coups
         moveList.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        moveList.setPreferredSize(new Dimension(120, 600));
-        add(new JScrollPane(moveList), BorderLayout.EAST);
+        moveList.setPreferredSize(new Dimension(180, 600));
+        moveList.setMinimumSize(new Dimension(180, 600));
+        moveList.setMaximumSize(new Dimension(180, 600));
+        JScrollPane moveListScrollPane = new JScrollPane(moveList);
+        moveListScrollPane.setPreferredSize(new Dimension(180, 600));
+        moveListScrollPane.setMinimumSize(new Dimension(180, 600));
+        moveListScrollPane.setMaximumSize(new Dimension(180, 600));
+        add(moveListScrollPane, BorderLayout.EAST);
         add(turnLabel, BorderLayout.NORTH);
         setSize(800, 600);
+        setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -42,11 +54,24 @@ public class ChessGameFrame extends JFrame {
         if (game.isValidMove(move)) {
             game.makeMove(move);
             moveHistory.add(formatMove(from, to));
-            moveListModel.addElement(formatMove(from, to));
+            refreshMoveList(); // Nouvelle méthode pour afficher les paires
             refresh();
             updateTurnLabel();
         } else {
             JOptionPane.showMessageDialog(this, "Coup invalide !", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Affiche l'historique des coups par paires (blanc/noir)
+    private void refreshMoveList() {
+        moveListModel.clear();
+
+        for (int i = 0; i < moveHistory.size(); i += 2) {
+            String coupBlanc = moveHistory.get(i);
+            String coupNoir = (i + 1 < moveHistory.size()) ? moveHistory.get(i + 1) : "";
+            int num = (i / 2) + 1;
+            String ligne = num + ". " + coupBlanc + (coupNoir.isEmpty() ? "" : " / " + coupNoir);
+            moveListModel.addElement(ligne);
         }
     }
 

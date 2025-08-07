@@ -34,8 +34,11 @@ public class ChessGame {
             ChessUtils.log("No piece at starting position: " + this.board.getCaseAt(startX, startY));
             return false;
         }
-        if ((whiteTurn && piece.getColor() == ChessColor.BLACK) || (!whiteTurn && piece.getColor() == ChessColor.WHITE)) {
+        if ((isWhiteTurn() && piece.getColor() == ChessColor.BLACK) || (!isWhiteTurn() && piece.getColor() == ChessColor.WHITE)) {
+
             ChessUtils.log("It's not your turn to move this piece: " + piece);
+            ChessUtils.log(" - white turn : " + isWhiteTurn());
+            ChessUtils.log(" - piece color: " + piece.getColor());
             return false;
         }
 

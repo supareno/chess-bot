@@ -5,8 +5,6 @@ import com.fcuillandre.chessbot.pieces.ChessPiece;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.utils.ChessUtils;
 
@@ -16,7 +14,6 @@ public class ChessBoardPanel extends JPanel {
     private MoveListener moveListener;
 
     private final JPanel gridPanel = new JPanel(new GridLayout(8, 8));
-    private final JPanel mainPanel = new JPanel(new BorderLayout());
     private final JLabel[] colLabels = new JLabel[8];
     private final JLabel[] rowLabels = new JLabel[8];
 
@@ -96,7 +93,6 @@ public class ChessBoardPanel extends JPanel {
     public void updateBoard(ChessBoard board) {
         for (int x = 7 ; x >= 0 ; x--) {
             for (int y = 0; y < 8; y++) {
-                int displayX = 7 - x;
                 ChessPiece piece = board.getPieceAt(x, y);
                 squares[x][y].setText( getBtnLabel(piece, x, y));
             }
