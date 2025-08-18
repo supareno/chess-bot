@@ -2,6 +2,8 @@ package com.fcuillandre.chessbot.ui;
 
 import com.fcuillandre.chessbot.board.ChessBoard;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
+import com.fcuillandre.chessbot.pieces.ChessColor;
+import com.fcuillandre.chessbot.pieces.ChessPieceType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +58,8 @@ public class ChessBoardPanel extends JPanel {
                 button.setFocusPainted(false);
                 button.setOpaque(true);
                 button.setBackground(((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY);
-                button.setFont(new Font("Arial", Font.BOLD, 20));
+                // Utilisation d'une police compatible Unicode pour les pièces d'échecs
+                button.setFont(new Font("Segoe UI Symbol", Font.BOLD, 36));
                 button.addActionListener(e -> handleSquareClick(realX, realY));
                 squares[x][y] = button;
                 gridPanel.add(button);
@@ -74,6 +77,11 @@ public class ChessBoardPanel extends JPanel {
             selected = new Coordinate(x, y);
             squares[x][y].setBackground(Color.YELLOW);
         } else {
+            // Si on clique deux fois sur la même case, annule la sélection
+            if (selected.getX() == x && selected.getY() == y) {
+                resetSelection();
+                return;
+            }
             if (moveListener != null) {
                 moveListener.onMove(selected, new Coordinate(x, y));
             }
@@ -103,6 +111,23 @@ public class ChessBoardPanel extends JPanel {
         if (piece == null) {
             return "";
         }
-        return piece.getType().name().substring(0, 1);
+        ChessPieceType type = piece.getType();
+        ChessColor color = piece.getColor();
+        switch (type) {
+            case KING:
+                return color == ChessColor.WHITE ? "\u2654" : "\u265A";
+            case QUEEN:
+                return color == ChessColor.WHITE ? "\u2655" : "\u265B";
+            case ROOK:
+                return color == ChessColor.WHITE ? "\u2656" : "\u265C";
+            case BISHOP:
+                return color == ChessColor.WHITE ? "\u2657" : "\u265D";
+            case KNIGHT:
+                return color == ChessColor.WHITE ? "\u2658" : "\u265E";
+            case PAWN:
+                return color == ChessColor.WHITE ? "\u2659" : "\u265F";
+            default:
+                return "";
+        }
     }
 }
