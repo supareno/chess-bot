@@ -1,39 +1,53 @@
 package com.fcuillandre.chessbot.ui;
 
 import com.fcuillandre.chessbot.board.ChessBoard;
-import com.fcuillandre.chessbot.pieces.ChessPiece;
+import com.fcuillandre.chessbot.game.ChessGame;
+import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.pieces.ChessColor;
+import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
+import com.fcuillandre.chessbot.utils.ChessUtils;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
-import com.fcuillandre.chessbot.game.Coordinate;
-import com.fcuillandre.chessbot.utils.ChessUtils;
 
+/**
+ * ChessBoardPanel is a JPanel that displays a chess board with buttons for each square.
+ * It allows users to click on squares to select pieces and make moves.
+ * The board updates based on the current state of the ChessGame.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
 public class ChessBoardPanel extends JPanel {
-    private final JButton[][] squares = new JButton[8][8];
-    private Coordinate selected = null;
-    private MoveListener moveListener;
 
+    private final JButton[][] squares = new JButton[8][8];
+    private final ChessGame game;
     private final JPanel gridPanel = new JPanel(new GridLayout(8, 8));
     private final JLabel[] colLabels = new JLabel[8];
     private final JLabel[] rowLabels = new JLabel[8];
+    private Coordinate selected = null;
+    @Getter
+    @Setter
+    private MoveListener moveListener;
 
-    public interface MoveListener {
-        void onMove(Coordinate from, Coordinate to);
-    }
+    /**
+     * Constructor for ChessBoardPanel.
+     * Initializes the chess board with buttons and labels for columns and rows.
+     *
+     * @param game The ChessGame instance that this panel will display.
+     */
+    public ChessBoardPanel(ChessGame game) {
+        this.game = game;
 
-    public void setMoveListener(MoveListener listener) {
-        this.moveListener = listener;
-    }
-
-    public ChessBoardPanel(ChessBoard board) {
         setLayout(new BorderLayout());
         // Labels colonnes (A-H)
         JPanel colLabelPanel = new JPanel(new GridLayout(1, 9));
         colLabelPanel.add(new JLabel("")); // coin vide
         for (int y = 0; y < 8; y++) {
-            colLabels[y] = new JLabel(String.valueOf((char)('A' + y)), SwingConstants.CENTER);
+            colLabels[y] = new JLabel(String.valueOf((char) ('A' + y)), SwingConstants.CENTER);
             colLabels[y].setFont(new Font("Arial", Font.BOLD, 16));
             colLabelPanel.add(colLabels[y]);
         }
@@ -48,7 +62,7 @@ public class ChessBoardPanel extends JPanel {
         add(rowPanel, BorderLayout.WEST);
         // Plateau
         gridPanel.setPreferredSize(new Dimension(480, 480));
-        for (int x = 7; x >= 0 ; x--) {
+        for (int x = 7; x >= 0; x--) {
             for (int y = 0; y < 8; y++) {
 
                 int realX = x;
@@ -66,14 +80,23 @@ public class ChessBoardPanel extends JPanel {
             }
         }
         add(gridPanel, BorderLayout.CENTER);
-        updateBoard(board);
+        updateBoard(this.game.getBoard());
     }
 
     private void handleSquareClick(int x, int y) {
 
-        ChessUtils.log("click on " + x + " / " + y);
+        ChessUtils.log(" --> click on " + x + " / " + y);
 
         if (selected == null) {
+            ChessPiece piece = this.game.getBoard().getPieceAt(x, y);
+            if (piece != null && piece.getColor().equals(ChessColor.WHITE) && !this.game.isWhiteTurn()) {
+                JOptionPane.showMessageDialog(this, "Ce n'est pas au blanc de jouer!", "Erreur", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else if (piece != null && piece.getColor().equals(ChessColor.BLACK) && this.game.isWhiteTurn()) {
+                JOptionPane.showMessageDialog(this, "Ce n'est pas au noir de jouer!", "Erreur", JOptionPane.ERROR_MESSAGE);
+                return;
+
+            }
             selected = new Coordinate(x, y);
             squares[x][y].setBackground(Color.YELLOW);
         } else {
@@ -90,7 +113,7 @@ public class ChessBoardPanel extends JPanel {
     }
 
     private void resetSelection() {
-        for (int x = 7; x >= 0 ; x--) {
+        for (int x = 7; x >= 0; x--) {
             for (int y = 0; y < 8; y++) {
                 squares[x][y].setBackground((x + y + 1) % 2 == 0 ? Color.WHITE : Color.LIGHT_GRAY);
             }
@@ -98,15 +121,30 @@ public class ChessBoardPanel extends JPanel {
         selected = null;
     }
 
+    /**
+     * Updates the chess board display based on the current state of the ChessBoard.
+     * <p>Each button's text is set to the unicode representation of the piece at that square.</p>
+     *
+     * @param board The ChessBoard to update the display from.
+     */
     public void updateBoard(ChessBoard board) {
-        for (int x = 7 ; x >= 0 ; x--) {
+        for (int x = 7; x >= 0; x--) {
             for (int y = 0; y < 8; y++) {
                 ChessPiece piece = board.getPieceAt(x, y);
-                squares[x][y].setText( getBtnLabel(piece, x, y));
+                squares[x][y].setText(getBtnLabel(piece, x, y));
             }
         }
     }
 
+    /**
+     * Returns the label for a button based on the piece type and color.
+     * <p>The String representation of a piece is an unicode letter representing a piece</p>
+     *
+     * @param piece The ChessPiece to get the label for.
+     * @param x     The x-coordinate of the button.
+     * @param y     The y-coordinate of the button.
+     * @return A string representing the piece, or an empty string if no piece is present.
+     */
     private String getBtnLabel(ChessPiece piece, int x, int y) {
         if (piece == null) {
             return "";
@@ -129,5 +167,9 @@ public class ChessBoardPanel extends JPanel {
             default:
                 return "";
         }
+    }
+
+    public interface MoveListener {
+        void onMove(Coordinate from, Coordinate to);
     }
 }

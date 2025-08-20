@@ -5,21 +5,47 @@ import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.utils.ChessUtils;
 import lombok.Getter;
 
+/**
+ * Represents a chess board containing pieces and their positions.
+ * Provides methods to get pieces, move them, and manage the board state.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
 @Getter
 public class ChessBoard {
 
     private final ChessPiece[][] board;
     private final String[][] cases;
 
+    /**
+     * Constructs a ChessBoard instance with an initialized board and cases.
+     * The board is set up with the standard chess starting position.
+     * The cases are initialized with their corresponding chess notation.
+     */
     public ChessBoard() {
         this.board = ChessUtils.initializeBoard();
         this.cases = ChessUtils.initializeCases();
     }
 
+    /**
+     * Returns the chess piece at the specified ChessCaseEnumeration.
+     *
+     * @param chessCase the ChessCaseEnumeration representing the position on the board
+     * @return the ChessPiece at the specified position, or null if no piece is present
+     */
     public ChessPiece getPieceAt(ChessCaseEnumeration chessCase) {
         return getPieceAt(chessCase.getCoordinate().getX(), chessCase.getCoordinate().getY());
     }
 
+    /**
+     * Returns the chess piece at the specified coordinates.
+     *
+     * @param x the x-coordinate (0-7)
+     * @param y the y-coordinate (0-7)
+     * @return the ChessPiece at the specified position, or null if no piece is present
+     * @throws IndexOutOfBoundsException if the coordinates are out of bounds
+     */
     public ChessPiece getPieceAt(int x, int y) {
         if (x < 0 || x >= 8 || y < 0 || y >= 8) {
             throw new IndexOutOfBoundsException("Coordinates out of bounds: (" + x + ", " + y + ")");
@@ -27,6 +53,14 @@ public class ChessBoard {
         return board[x][y];
     }
 
+    /**
+     * Returns the chess case at the specified coordinates.
+     *
+     * @param x the x-coordinate (0-7)
+     * @param y the y-coordinate (0-7)
+     * @return the chess case notation at the specified position
+     * @throws IndexOutOfBoundsException if the coordinates are out of bounds
+     */
     public String getCaseAt(int x, int y) {
         if (x < 0 || x >= 8 || y < 0 || y >= 8) {
             throw new IndexOutOfBoundsException("Coordinates out of bounds: (" + x + ", " + y + ")");
@@ -34,11 +68,13 @@ public class ChessBoard {
         return cases[x][y];
     }
 
-
-    public void printBoard() {
-        ChessUtils.printBoard(board);
-    }
-
+    /**
+     * Moves a piece from one chess case to another using their string representations.
+     *
+     * @param from the starting chess case in string format (e.g., "A1")
+     * @param to   the target chess case in string format (e.g., "B2")
+     * @throws IllegalArgumentException if no piece is found at the starting position
+     */
     public void move(String from, String to) {
         ChessCaseEnumeration caseEnumFrom = ChessCaseEnumeration.valueOf(from.toUpperCase());
         ChessCaseEnumeration caseEnumTo = ChessCaseEnumeration.valueOf(to.toUpperCase());
@@ -46,6 +82,12 @@ public class ChessBoard {
         this.move(new Move(caseEnumFrom.getCoordinate(), caseEnumTo.getCoordinate()));
     }
 
+    /**
+     * Moves a piece from one coordinate to another.
+     *
+     * @param move the Move object containing the start and end coordinates
+     * @throws IllegalArgumentException if no piece is found at the starting position
+     */
     public void move(Move move) {
         int startX = move.getStart().getX();
         int startY = move.getStart().getY();
@@ -59,13 +101,10 @@ public class ChessBoard {
         board[startX][startY] = null;
     }
 
-
-    public void resetBoard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = null;
-            }
+    public void setPieceAt(int startX, int startY, ChessPiece piece) {
+        if (startX < 0 || startX >= 8 || startY < 0 || startY >= 8) {
+            throw new IndexOutOfBoundsException("Coordinates out of bounds: (" + startX + ", " + startY + ")");
         }
-        ChessUtils.initializeBoard();
+        board[startX][startY] = piece;
     }
 }

@@ -7,6 +7,7 @@ import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.utils.ChessUtils;
 
 import static com.fcuillandre.chessbot.pieces.ChessColor.WHITE;
+import static com.fcuillandre.chessbot.pieces.ChessPieceType.PAWN;
 
 /**
  * Classe pour vérifier les mouvements des pions dans le jeu d'échecs.
@@ -45,6 +46,26 @@ public final class PawnMoveChecker extends AbstractMoveChecker {
                 && board.getPieceAt(endX, endY) != null
                 && board.getPieceAt(endX, endY).getColor() != piece.getColor()) {
             return true;
+        }
+        // Prise en passant
+        int enPassantRow = isWhite ? 4 : 3;
+        if (startX == enPassantRow && Math.abs(endY - startY) == 1 && endX - startX == direction) {
+            Move lastMove = game.getLastMove();
+            if (lastMove != null) {
+                int lmStartX = lastMove.getStart().getX();
+                int lmStartY = lastMove.getStart().getY();
+                int lmEndX = lastMove.getEnd().getX();
+                int lmEndY = lastMove.getEnd().getY();
+                ChessPiece lastMovedPiece = board.getPieceAt(lmEndX, lmEndY);
+                if (lastMovedPiece != null && lastMovedPiece.getType() == PAWN && lastMovedPiece.getColor() != piece.getColor()
+                    && Math.abs(lmEndY - startY) == 1 && lmEndX == startX && Math.abs(lmEndX - lmStartX) == 2) {
+                    if (board.getPieceAt(endX, endY) == null) {
+                        // Marque la prise en passant dans ChessGame
+                        game.setEnPassant(true);
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
