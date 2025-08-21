@@ -70,8 +70,17 @@ public class ChessGameFrame extends JFrame {
             refreshMoveList(); // Nouvelle méthode pour afficher les paires
             refresh();
             updateTurnLabel();
+            // Vérification de la mise en échec du roi après le coup
+            if (game.isKingInCheck()) {
+                JOptionPane.showMessageDialog(this, "Attention : le roi est en échec !", "Échec", JOptionPane.WARNING_MESSAGE);
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Coup invalide !", "Erreur", JOptionPane.ERROR_MESSAGE);
+            // Message spécifique si le roi reste en échec
+            if (game.isKingInCheck()) {
+                JOptionPane.showMessageDialog(this, "Coup invalide : le roi est toujours en échec !", "Erreur", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Coup invalide !", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

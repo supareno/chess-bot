@@ -72,8 +72,19 @@ public class ChessGame {
             ChessUtils.log(" - piece color: " + piece.getColor());
             return false;
         }
-
-        return getMoveChecker(piece).isValidMove(piece, move, board, this);
+        boolean valid = getMoveChecker(piece).isValidMove(piece, move, board, this);
+        // Si le roi est en échec, n'autoriser que les coups qui le sortent de l'échec
+        if (isKingInCheck()) {
+            if (!doesMoveResolveCheck(move)) {
+                return false;
+            }
+        } else {
+            // Ne jamais autoriser un coup qui met son propre roi en échec
+            if (!doesMoveResolveCheck(move)) {
+                return false;
+            }
+        }
+        return valid;
     }
 
     /**
@@ -241,4 +252,71 @@ public class ChessGame {
         moveHistory.clear();
     }
 
+    /**
+     * Checks if the king is in check.
+     * <p>This method checks if the current player's king is under threat of capture.</p>
+     *
+     * @return true if the king is in check, false otherwise
+     */
+    public boolean isKingInCheck() {
+        ChessColor currentColor = whiteTurn ? ChessColor.WHITE : ChessColor.BLACK;
+        FoundPiece king = findKing(currentColor);
+        // Check if any opposing pieces can attack the king's position
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                ChessPiece piece = board.getPieceAt(x, y);
+                if (piece != null && piece.getColor() != currentColor) {
+                    Move potentialAttack = new Move(new Coordinate(x, y), new Coordinate(king.getCoordinate().getX(), king.getCoordinate().getY()));
+                    if (getMoveChecker(piece).isValidMove(piece, potentialAttack, board, this)) {
+                        ChessUtils.log("King is in check from piece: " + piece);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Finds the king piece for the given color.
+     *
+     * @param color The color of the king to find
+     * @return The king piece, or null if not found
+     */
+    private FoundPiece findKing(ChessColor color) {
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                ChessPiece piece = board.getPieceAt(x, y);
+                if (piece != null && piece.getType() == ChessPieceType.KING && piece.getColor() == color) {
+                    return new FoundPiece(piece, new Coordinate(x, y));
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Simule un coup et vérifie si le roi du joueur n'est plus en échec après ce coup.
+     */
+    private boolean doesMoveResolveCheck(Move move) {
+        // Sauvegarde l'état du plateau
+        ChessPiece[][] backup = new ChessPiece[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece p = board.getPieceAt(i, j);
+                backup[i][j] = p == null ? null : new ChessPiece(p.getColor(), p.getType());
+            }
+        }
+        // Joue le coup
+        board.move(move);
+        boolean stillInCheck = isKingInCheck();
+        // Annule le coup
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                board.setPieceAt(i, j, backup[i][j]);
+            }
+        }
+        return !stillInCheck;
+    }
 }
