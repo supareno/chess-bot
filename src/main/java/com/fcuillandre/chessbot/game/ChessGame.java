@@ -21,7 +21,7 @@ import lombok.Setter;
  * @author FCuillandre
  * @version 1.0
  */
-public class ChessGame {
+public final class ChessGame {
 
     @Getter
     private final java.util.List<Move> moveHistory = new java.util.ArrayList<>();
@@ -143,7 +143,6 @@ public class ChessGame {
             if (enPassant) {
                 // Retire le pion adverse pris en passant. le pion adverse est celui qui a été déplacé de deux cases lors du dernier coup
                 Move lastMove = this.lastMove;
-                int startXLast = lastMove.getStart().getX();
                 int endXLast = lastMove.getEnd().getX();
                 int endYLast = lastMove.getEnd().getY();
                 board.getBoard()[endXLast][endYLast] = null;
@@ -261,7 +260,10 @@ public class ChessGame {
     public boolean isKingInCheck() {
         ChessColor currentColor = whiteTurn ? ChessColor.WHITE : ChessColor.BLACK;
         FoundPiece king = findKing(currentColor);
+
         // Check if any opposing pieces can attack the king's position
+        ChessUtils.log((king == null ? "No king found for color: " + currentColor : "King found at: " + king.getCoordinate()));
+
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 ChessPiece piece = board.getPieceAt(x, y);

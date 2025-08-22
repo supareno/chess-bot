@@ -3,9 +3,11 @@ package com.fcuillandre.chessbot.game;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class FoundPiece {
     private final Coordinate coordinate;
     private final ChessPiece piece;
