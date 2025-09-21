@@ -1,16 +1,32 @@
 package com.fcuillandre.chessbot.utils;
 
-import com.fcuillandre.chessbot.board.ChessBoard;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 
 import static com.fcuillandre.chessbot.pieces.ChessPieces.*;
 
+/**
+ * Utility class for chess-related functions.
+ *
+ * @author fcuillandre
+ * @version 1.0
+ */
 public class ChessUtils {
 
+    /**
+     * Log a message.
+     * <p>For the moment, the message is logged in the console</p>
+     *
+     * @param arg The message to log.
+     */
     public static void log(String arg) {
         System.out.println(arg);
     }
 
+    /**
+     * Initialize the chess board with pieces in their starting positions.
+     *
+     * @return A 2D array representing the chess board with pieces.
+     */
     public static ChessPiece[][] initializeBoard() {
         ChessPiece[][] board = new ChessPiece[8][8];
         // Initialize pieces for white
@@ -40,21 +56,12 @@ public class ChessUtils {
         return board;
     }
 
-    public static void printBoard(ChessPiece[][] board) {
 
-        for (int i = 7; i >= 0; i--) {
-            System.out.print((i + 1) + " | ");
-            for (int j = 0; j < 8; j++) {
-                ChessPiece piece = board[i][j];
-                System.out.print((piece != null ? piece : ".") + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("   -----------------");
-        System.out.println("    A B C D E F G H");
-        System.out.println("---- ---- ---- ---- ---- ---- ---- ----");
-    }
-
+    /**
+     * Initialize the chessboard cases with coordinates.
+     *
+     * @return A 2D array representing the chessboard cases.
+     */
     public static String[][] initializeCases() {
         // initialize the chessboard cases with coordinates with format "A1", "B2", etc.
         String[][] cases = new String[8][8];
@@ -68,13 +75,4 @@ public class ChessUtils {
         }
         return cases;
     }
-
-    public static String getCaseName(int x, int y) {
-        // Convert x and y to chess notation (A1, B2, etc.)
-        char file = (char) ('A' + x);
-        int rank = 8 - y; // Reverse the rank for chess notation
-        return "" + file + rank;
-    }
-
-    // Additional utility methods can be added here
 }

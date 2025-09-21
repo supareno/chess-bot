@@ -1,9 +1,10 @@
 package com.fcuillandre.chessbot.ui;
 
+import com.fcuillandre.chessbot.bot.ChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.game.Move;
-import com.fcuillandre.chessbot.utils.ChessUtils;
+import com.fcuillandre.chessbot.pieces.ChessColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +24,8 @@ public class ChessGameFrame extends JFrame {
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
+    private final ChessBot bot = new ChessBot();
+    private boolean gameOver = false;
 
     /**
      * Constructor for the ChessGameFrame.
@@ -63,25 +66,137 @@ public class ChessGameFrame extends JFrame {
     }
 
     private void handleMove(Coordinate from, Coordinate to) {
-        ChessUtils.log("from " + from + " to " + to);
+        if (gameOver) return;
         Move move = new Move(from, to);
         if (game.isValidMove(move)) {
             game.makeMove(move); // move is added to the history in the makeMove method
             refreshMoveList(); // Nouvelle méthode pour afficher les paires
-            refresh();
-            updateTurnLabel();
             // Vérification de la mise en échec du roi après le coup
             if (game.isKingInCheck()) {
-                JOptionPane.showMessageDialog(this, "Attention : le roi est en échec !", "Échec", JOptionPane.WARNING_MESSAGE);
+                boardPanel.setKingInCheckCoordinate(game.getKingCoordinate(game.isWhiteTurn() ? ChessColor.WHITE : ChessColor.BLACK));
+                updateTurnLabelWithCheck();
+            } else {
+                boardPanel.setKingInCheckCoordinate(null);
+                updateTurnLabel();
+            }
+
+            refresh();
+
+            // Check for checkmate after human move
+            if (game.isCheckmate()) {
+                gameOver = true;
+                displayMessage(this, "Échec et mat ! Les " + (game.isWhiteTurn() ? "blancs" : "noirs") + " ont perdu.", "Fin de partie", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            // Check for stalemate after human move
+            if (game.isStalemate()) {
+                gameOver = true;
+                displayMessage(this, "Partie nulle par pat !", "Fin de partie", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            // Trigger bot move if it's now Black's turn
+
+            if (!game.isWhiteTurn()) {
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(3000); // Wait at least 3 seconds
+                    } catch (InterruptedException ignored) {
+                    }
+                    if (gameOver) return;
+                    Move botMove = bot.getRandomLegalMove(game);
+                    if (botMove != null) {
+                        SwingUtilities.invokeLater(() -> {
+                            game.makeMove(botMove);
+                            refreshMoveList();
+                            refresh();
+                            // Highlight king in check for the opponent (after move, turn has switched)
+                            ChessColor opponentColor = game.isWhiteTurn() ? ChessColor.BLACK : ChessColor.WHITE;
+                            if (game.isKingInCheck()) {
+                                boardPanel.setKingInCheckCoordinate(game.getKingCoordinate(opponentColor));
+                                updateTurnLabelWithCheck();
+                            } else {
+                                boardPanel.setKingInCheckCoordinate(null);
+                                updateTurnLabel();
+                            }
+                            // Check for checkmate after bot move
+                            if (game.isCheckmate()) {
+                                gameOver = true;
+                                displayMessage(this, "Échec et mat ! Les " + (game.isWhiteTurn() ? "blancs" : "noirs") + " ont perdu.", "Fin de partie", JOptionPane.INFORMATION_MESSAGE);
+                                return;
+                            }
+                            // Check for stalemate after bot move
+                            if (game.isStalemate()) {
+                                gameOver = true;
+                                displayMessage(this, "Partie nulle par pat !", "Fin de partie", JOptionPane.INFORMATION_MESSAGE);
+                                return;
+                            }
+                        });
+                    }
+                }).start();
             }
         } else {
             // Message spécifique si le roi reste en échec
             if (game.isKingInCheck()) {
-                JOptionPane.showMessageDialog(this, "Coup invalide : le roi est toujours en échec !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                displayMessage(this, "Coup invalide : le roi est toujours en échec !", "Erreur", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Coup invalide !", "Erreur", JOptionPane.ERROR_MESSAGE);
+                displayMessage(this, "Coup invalide !", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
+
+        // Pawn promotion check (after move, before bot move)
+        Move lastMove = game.getLastMove();
+        if (lastMove != null) {
+            int endX = lastMove.getEnd().getX();
+            int endY = lastMove.getEnd().getY();
+            com.fcuillandre.chessbot.pieces.ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
+            if (promotedPawn != null && promotedPawn.getType() == com.fcuillandre.chessbot.pieces.ChessPieceType.PAWN) {
+                if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE && endX == 7) {
+                    // Human promotion dialog
+                    com.fcuillandre.chessbot.pieces.ChessPieceType[] options = {
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
+                    };
+                    String[] optionNames = {"Queen", "Rook", "Bishop", "Knight"};
+                    int choice = JOptionPane.showOptionDialog(this,
+                            "Choose a piece for promotion:",
+                            "Pawn Promotion",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            optionNames,
+                            optionNames[0]);
+                    if (choice >= 0 && choice < options.length) {
+                        game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), options[choice]);
+                        refresh();
+                    }
+                } else if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.BLACK && endX == 0) {
+                    // Bot promotion: random
+                    com.fcuillandre.chessbot.pieces.ChessPieceType[] options = {
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
+                        com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
+                    };
+                    int idx = (int) (Math.random() * options.length);
+                    game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), options[idx]);
+                    refresh();
+                }
+            }
+        }
+    }
+
+    /**
+     * Displays a warning dialog when the king is in check.
+     *
+     * @param parentComponent the parent component for the dialog
+     * @param message         the message to display
+     * @param title           the title of the dialog
+     * @param messageType     the type of message to be displayed
+     */
+    private void displayMessage(Component parentComponent, String message, String title, int messageType) {
+        JOptionPane.showMessageDialog(parentComponent, message, title, messageType);
     }
 
     // Affiche l'historique des coups par paires (blanc/noir)
@@ -134,6 +249,12 @@ public class ChessGameFrame extends JFrame {
 
     private void updateTurnLabel() {
         turnLabel.setText("Au tour des " + (game.isWhiteTurn() ? "blancs" : "noirs"));
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    }
+
+    private void updateTurnLabelWithCheck() {
+        turnLabel.setText("Au tour des " + (game.isWhiteTurn() ? "blancs" : "noirs") + " Attention le roi est en échec !");
         turnLabel.setFont(new Font("Arial", Font.BOLD, 18));
         turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }

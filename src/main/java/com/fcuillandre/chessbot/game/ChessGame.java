@@ -172,6 +172,8 @@ public final class ChessGame {
                     }
                 }
             }
+            // Pawn promotion detection (UI must call promotePawn after move if needed)
+            // No automatic promotion here; UI will handle it after move
             lastMove = move;
             whiteTurn = !whiteTurn; // Switch turn
         } else {
@@ -262,15 +264,12 @@ public final class ChessGame {
         FoundPiece king = findKing(currentColor);
 
         // Check if any opposing pieces can attack the king's position
-        ChessUtils.log((king == null ? "No king found for color: " + currentColor : "King found at: " + king.getCoordinate()));
-
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 ChessPiece piece = board.getPieceAt(x, y);
-                if (piece != null && piece.getColor() != currentColor) {
+                if (piece != null && piece.getColor() != currentColor && king != null) {
                     Move potentialAttack = new Move(new Coordinate(x, y), new Coordinate(king.getCoordinate().getX(), king.getCoordinate().getY()));
                     if (getMoveChecker(piece).isValidMove(piece, potentialAttack, board, this)) {
-                        ChessUtils.log("King is in check from piece: " + piece);
                         return true;
                     }
                 }
@@ -299,6 +298,14 @@ public final class ChessGame {
     }
 
     /**
+     * Returns the coordinate of the king for the given color, or null if not found.
+     */
+    public Coordinate getKingCoordinate(ChessColor color) {
+        FoundPiece king = findKing(color);
+        return king != null ? king.getCoordinate() : null;
+    }
+
+    /**
      * Simule un coup et vérifie si le roi du joueur n'est plus en échec après ce coup.
      */
     private boolean doesMoveResolveCheck(Move move) {
@@ -320,5 +327,75 @@ public final class ChessGame {
             }
         }
         return !stillInCheck;
+    }
+
+    /**
+     * Checks if the current player is in checkmate.
+     * @return true if the current player is in checkmate, false otherwise
+     */
+    public boolean isCheckmate() {
+        if (!isKingInCheck()) {
+            return false;
+        }
+        ChessColor currentColor = whiteTurn ? ChessColor.WHITE : ChessColor.BLACK;
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                ChessPiece piece = board.getPieceAt(x, y);
+                if (piece != null && piece.getColor() == currentColor) {
+                    for (int dx = 0; dx < 8; dx++) {
+                        for (int dy = 0; dy < 8; dy++) {
+                            if (x == dx && y == dy) continue;
+                            Move move = new Move(new Coordinate(x, y), new Coordinate(dx, dy));
+                            if (isValidMove(move)) {
+                                return false; // At least one legal move exists
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true; // No legal moves and king is in check
+    }
+
+    /**
+     * Checks if the current player is in stalemate.
+     * Stalemate occurs when the player is not in check and has no legal moves.
+     *
+     * @return true if stalemate, false otherwise
+     */
+    public boolean isStalemate() {
+        if (isKingInCheck()) {
+            return false;
+        }
+        ChessColor currentColor = whiteTurn ? ChessColor.WHITE : ChessColor.BLACK;
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                ChessPiece piece = board.getPieceAt(x, y);
+                if (piece != null && piece.getColor() == currentColor) {
+                    for (int toX = 0; toX < 8; toX++) {
+                        for (int toY = 0; toY < 8; toY++) {
+                            if (x == toX && y == toY) continue;
+                            Move move = new Move(new Coordinate(x, y), new Coordinate(toX, toY));
+                            if (isValidMove(move)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Promotes a pawn at the given coordinate to the specified piece type.
+     * @param coord The coordinate of the pawn to promote.
+     * @param newType The type to promote to (must not be KING or PAWN).
+     */
+    public void promotePawn(Coordinate coord, ChessPieceType newType) {
+        ChessPiece pawn = board.getPieceAt(coord.getX(), coord.getY());
+        if (pawn == null || pawn.getType() != ChessPieceType.PAWN) return;
+        if (newType == ChessPieceType.KING || newType == ChessPieceType.PAWN) return;
+        board.setPieceAt(coord.getX(), coord.getY(), new ChessPiece(pawn.getColor(), newType));
     }
 }

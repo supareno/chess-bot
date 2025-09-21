@@ -29,6 +29,8 @@ public class ChessBoardPanel extends JPanel {
     private final JLabel[] colLabels = new JLabel[8];
     private final JLabel[] rowLabels = new JLabel[8];
     private Coordinate selected = null;
+    @Setter
+    private Coordinate kingInCheckCoordinate = null;
     @Getter
     @Setter
     private MoveListener moveListener;
@@ -85,7 +87,6 @@ public class ChessBoardPanel extends JPanel {
 
     private void handleSquareClick(int x, int y) {
 
-        ChessUtils.log(" --> click on " + x + " / " + y);
 
         if (selected == null) {
             ChessPiece piece = this.game.getBoard().getPieceAt(x, y);
@@ -128,10 +129,22 @@ public class ChessBoardPanel extends JPanel {
      * @param board The ChessBoard to update the display from.
      */
     public void updateBoard(ChessBoard board) {
-        for (int x = 7; x >= 0; x--) {
+        for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
+                JButton button = squares[x][y];
                 ChessPiece piece = board.getPieceAt(x, y);
-                squares[x][y].setText(getBtnLabel(piece, x, y));
+                Color bg = ((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY;
+                if (piece != null) {
+                    if (piece.getType() == ChessPieceType.KING && kingInCheckCoordinate != null) {
+                        ChessUtils.log("Roi en échec en " + kingInCheckCoordinate);
+                        //button.setBackground(Color.ORANGE);
+                    }
+                    button.setText(getBtnLabel(piece, x, y));
+                } else {
+                    button.setText("");
+                }
+                button.setBackground(((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY);
+
             }
         }
     }

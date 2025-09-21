@@ -2,11 +2,16 @@ package com.fcuillandre.chessbot;
 
 import com.fcuillandre.chessbot.game.ChessGame;
 
-public class App {
+/**
+ * Main class to start the Chess application.
+ *
+ * @author fcuillandre
+ * @version 1.0
+ */
+public class ChessApp {
 
     public static void main(String[] args) {
         ChessGame game = new ChessGame();
-        //ChessBot bot = new ChessBot();
         new com.fcuillandre.chessbot.ui.ChessGameFrame(game);
     }
 }
