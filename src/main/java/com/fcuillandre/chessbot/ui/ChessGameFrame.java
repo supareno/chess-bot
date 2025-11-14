@@ -4,13 +4,13 @@ import com.fcuillandre.chessbot.bot.ChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.game.Move;
-import com.fcuillandre.chessbot.pieces.ChessColor;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ResourceBundle;
-import java.util.Locale;
 import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * This class represents the main frame for the chess game UI.
@@ -22,14 +22,15 @@ import java.text.MessageFormat;
  */
 public class ChessGameFrame extends JFrame {
 
-    private final ChessBoardPanel boardPanel;
-    private final ChessGame game;
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
     private final ChessBot bot = new ChessBot();
+    private ChessBoardPanel boardPanel;
+    private ChessGame game;
     private boolean gameOver = false;
     private Locale currentLocale = Locale.getDefault();
+    @Getter
     private ResourceBundle messages = ResourceBundle.getBundle("messages", currentLocale);
     private JMenuBar menuBar;
     private JMenu homeMenu;
@@ -51,7 +52,7 @@ public class ChessGameFrame extends JFrame {
     public ChessGameFrame(ChessGame game) {
         super(ResourceBundle.getBundle("messages", Locale.getDefault()).getString("app.title"));
         this.game = game;
-        this.boardPanel = new ChessBoardPanel(game);
+        this.boardPanel = new ChessBoardPanel(this, game);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setJMenuBar(createMenuBar());
@@ -90,9 +91,9 @@ public class ChessGameFrame extends JFrame {
         infosItem = new JMenuItem(messages.getString("menu.infos"));
         infosItem.addActionListener(e -> onInfos());
         helpMenu.add(infosItem);
-        languageMenu = new JMenu("Language");
-        englishItem = new JMenuItem("English");
-        frenchItem = new JMenuItem("Français");
+        languageMenu = new JMenu(messages.getString("menu.language"));
+        englishItem = new JMenuItem(messages.getString("menu.language_english"));
+        frenchItem = new JMenuItem(messages.getString("menu.language_french"));
         englishItem.addActionListener(e -> switchLanguage(Locale.ENGLISH));
         frenchItem.addActionListener(e -> switchLanguage(Locale.FRENCH));
         languageMenu.add(englishItem);
@@ -116,9 +117,9 @@ public class ChessGameFrame extends JFrame {
         quitItem.setText(messages.getString("menu.quit"));
         helpMenu.setText(messages.getString("menu.help"));
         infosItem.setText(messages.getString("menu.infos"));
-        languageMenu.setText(currentLocale.equals(Locale.FRENCH) ? "Langue" : "Language");
-        englishItem.setText("English");
-        frenchItem.setText("Français");
+        languageMenu.setText(messages.getString("menu.language"));
+        englishItem.setText(messages.getString("menu.language_english"));
+        frenchItem.setText(messages.getString("menu.language_french"));
         updateTurnLabel();
         refreshMoveList();
     }
@@ -132,7 +133,7 @@ public class ChessGameFrame extends JFrame {
             ChessGame newGame = new ChessGame();
             boardPanel.setMoveListener(null);
             getContentPane().remove(boardPanel);
-            ChessBoardPanel newBoardPanel = new ChessBoardPanel(newGame);
+            ChessBoardPanel newBoardPanel = new ChessBoardPanel(this, newGame);
             newBoardPanel.setPreferredSize(new Dimension(600, 600));
             add(newBoardPanel, BorderLayout.CENTER);
             this.moveListModel.clear();
@@ -140,16 +141,10 @@ public class ChessGameFrame extends JFrame {
             this.gameOver = false;
             this.boardPanel.setVisible(false);
             this.boardPanel.removeAll();
-            try {
-                java.lang.reflect.Field gameField = ChessGameFrame.class.getDeclaredField("game");
-                gameField.setAccessible(true);
-                gameField.set(this, newGame);
-                java.lang.reflect.Field boardPanelField = ChessGameFrame.class.getDeclaredField("boardPanel");
-                boardPanelField.setAccessible(true);
-                boardPanelField.set(this, newBoardPanel);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+
+            this.game = newGame;
+            this.boardPanel = newBoardPanel;
+
             newBoardPanel.setMoveListener(this::handleMove);
             revalidate();
             repaint();
@@ -179,34 +174,33 @@ public class ChessGameFrame extends JFrame {
             game.makeMove(move);
             refreshMoveList();
             if (game.isKingInCheck()) {
-                boardPanel.setKingInCheckCoordinate(game.getKingCoordinate(game.isWhiteTurn() ? ChessColor.WHITE : ChessColor.BLACK));
                 updateTurnLabelWithCheck();
             } else {
-                boardPanel.setKingInCheckCoordinate(null);
                 updateTurnLabel();
             }
             refresh();
             if (game.isCheckmate()) {
                 gameOver = true;
                 displayMessage(this,
-                    MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
-                    messages.getString("dialog.checkmate_title"),
-                    JOptionPane.WARNING_MESSAGE);
+                        MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
+                        messages.getString("dialog.checkmate_title"),
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (game.isStalemate()) {
                 gameOver = true;
                 displayMessage(this,
-                    messages.getString("dialog.stalemate"),
-                    messages.getString("dialog.stalemate_title"),
-                    JOptionPane.INFORMATION_MESSAGE);
+                        messages.getString("dialog.stalemate"),
+                        messages.getString("dialog.stalemate_title"),
+                        JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             if (!game.isWhiteTurn()) {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                    } catch (InterruptedException ignored) {}
+                    } catch (InterruptedException ignored) {
+                    }
                     if (gameOver) return;
                     Move botMove = bot.getRandomLegalMove(game);
                     if (botMove != null) {
@@ -214,28 +208,25 @@ public class ChessGameFrame extends JFrame {
                             game.makeMove(botMove);
                             refreshMoveList();
                             refresh();
-                            ChessColor opponentColor = game.isWhiteTurn() ? ChessColor.BLACK : ChessColor.WHITE;
                             if (game.isKingInCheck()) {
-                                boardPanel.setKingInCheckCoordinate(game.getKingCoordinate(opponentColor));
                                 updateTurnLabelWithCheck();
                             } else {
-                                boardPanel.setKingInCheckCoordinate(null);
                                 updateTurnLabel();
                             }
                             if (game.isCheckmate()) {
                                 gameOver = true;
                                 displayMessage(this,
-                                    MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
-                                    messages.getString("dialog.checkmate_title"),
-                                    JOptionPane.INFORMATION_MESSAGE);
+                                        MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
+                                        messages.getString("dialog.checkmate_title"),
+                                        JOptionPane.INFORMATION_MESSAGE);
                                 return;
                             }
                             if (game.isStalemate()) {
                                 gameOver = true;
                                 displayMessage(this,
-                                    messages.getString("dialog.stalemate"),
-                                    messages.getString("dialog.stalemate_title"),
-                                    JOptionPane.INFORMATION_MESSAGE);
+                                        messages.getString("dialog.stalemate"),
+                                        messages.getString("dialog.stalemate_title"),
+                                        JOptionPane.INFORMATION_MESSAGE);
                                 return;
                             }
                         });
@@ -245,14 +236,14 @@ public class ChessGameFrame extends JFrame {
         } else {
             if (game.isKingInCheck()) {
                 displayMessage(this,
-                    messages.getString("dialog.king_still_in_check"),
-                    messages.getString("dialog.invalid_move_title"),
-                    JOptionPane.ERROR_MESSAGE);
+                        messages.getString("dialog.king_still_in_check"),
+                        messages.getString("dialog.invalid_move_title"),
+                        JOptionPane.ERROR_MESSAGE);
             } else {
                 displayMessage(this,
-                    messages.getString("dialog.invalid_move"),
-                    messages.getString("dialog.invalid_move_title"),
-                    JOptionPane.ERROR_MESSAGE);
+                        messages.getString("dialog.invalid_move"),
+                        messages.getString("dialog.invalid_move_title"),
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
         Move lastMove = game.getLastMove();
@@ -263,16 +254,16 @@ public class ChessGameFrame extends JFrame {
             if (promotedPawn != null && promotedPawn.getType() == com.fcuillandre.chessbot.pieces.ChessPieceType.PAWN) {
                 if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE && endX == 7) {
                     com.fcuillandre.chessbot.pieces.ChessPieceType[] options = {
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
                     };
                     String[] optionNames = {
-                        messages.getString("piece.queen"),
-                        messages.getString("piece.rook"),
-                        messages.getString("piece.bishop"),
-                        messages.getString("piece.knight")
+                            messages.getString("piece.queen"),
+                            messages.getString("piece.rook"),
+                            messages.getString("piece.bishop"),
+                            messages.getString("piece.knight")
                     };
                     int choice = JOptionPane.showOptionDialog(this,
                             messages.getString("dialog.pawn_promotion"),
@@ -288,10 +279,10 @@ public class ChessGameFrame extends JFrame {
                     }
                 } else if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.BLACK && endX == 0) {
                     com.fcuillandre.chessbot.pieces.ChessPieceType[] options = {
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
-                        com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
+                            com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
                     };
                     int idx = (int) (Math.random() * options.length);
                     game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), options[idx]);

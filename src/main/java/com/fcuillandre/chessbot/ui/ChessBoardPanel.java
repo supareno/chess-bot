@@ -6,7 +6,6 @@ import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.pieces.ChessColor;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
-import com.fcuillandre.chessbot.utils.ChessUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,14 +22,12 @@ import java.awt.*;
  */
 public class ChessBoardPanel extends JPanel {
 
-    private final JButton[][] squares = new JButton[8][8];
+    private final SquarePanel[][] squares = new SquarePanel[8][8];
     private final ChessGame game;
+    private final ChessGameFrame chessGameFrame;
     private final JPanel gridPanel = new JPanel(new GridLayout(8, 8));
-    private final JLabel[] colLabels = new JLabel[8];
-    private final JLabel[] rowLabels = new JLabel[8];
     private Coordinate selected = null;
-    @Setter
-    private Coordinate kingInCheckCoordinate = null;
+
     @Getter
     @Setter
     private MoveListener moveListener;
@@ -41,44 +38,20 @@ public class ChessBoardPanel extends JPanel {
      *
      * @param game The ChessGame instance that this panel will display.
      */
-    public ChessBoardPanel(ChessGame game) {
+    public ChessBoardPanel(ChessGameFrame chessGameFrame, ChessGame game) {
+        this.chessGameFrame = chessGameFrame;
         this.game = game;
 
         setLayout(new BorderLayout());
-        // Labels colonnes (A-H)
-        JPanel colLabelPanel = new JPanel(new GridLayout(1, 9));
-        colLabelPanel.add(new JLabel("")); // coin vide
-        for (int y = 0; y < 8; y++) {
-            colLabels[y] = new JLabel(String.valueOf((char) ('A' + y)), SwingConstants.CENTER);
-            colLabels[y].setFont(new Font("Arial", Font.BOLD, 16));
-            colLabelPanel.add(colLabels[y]);
-        }
-        add(colLabelPanel, BorderLayout.NORTH);
-        // Labels lignes (8-1)
-        JPanel rowPanel = new JPanel(new GridLayout(8, 1));
-        for (int x = 0; x < 8; x++) {
-            rowLabels[x] = new JLabel(String.valueOf(8 - x), SwingConstants.CENTER);
-            rowLabels[x].setFont(new Font("Arial", Font.BOLD, 16));
-            rowPanel.add(rowLabels[x]);
-        }
-        add(rowPanel, BorderLayout.WEST);
-        // Plateau
+        // Remove old column and row label panels
+        // Add only the gridPanel to the center
         gridPanel.setPreferredSize(new Dimension(480, 480));
         for (int x = 7; x >= 0; x--) {
             for (int y = 0; y < 8; y++) {
 
-                int realX = x;
-                int realY = y;
-
-                JButton button = new JButton();
-                button.setFocusPainted(false);
-                button.setOpaque(true);
-                button.setBackground(((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY);
-                // Utilisation d'une police compatible Unicode pour les pièces d'échecs
-                button.setFont(new Font("Segoe UI Symbol", Font.BOLD, 36));
-                button.addActionListener(e -> handleSquareClick(realX, realY));
-                squares[x][y] = button;
-                gridPanel.add(button);
+                SquarePanel panel = new SquarePanel(x, y);
+                squares[x][y] = panel;
+                gridPanel.add(panel);
             }
         }
         add(gridPanel, BorderLayout.CENTER);
@@ -90,16 +63,19 @@ public class ChessBoardPanel extends JPanel {
 
         if (selected == null) {
             ChessPiece piece = this.game.getBoard().getPieceAt(x, y);
+            String title = this.chessGameFrame.getMessages().getString("dialog.error_title");
             if (piece != null && piece.getColor().equals(ChessColor.WHITE) && !this.game.isWhiteTurn()) {
-                JOptionPane.showMessageDialog(this, "Ce n'est pas au blanc de jouer!", "Erreur", JOptionPane.ERROR_MESSAGE);
+                String message = this.chessGameFrame.getMessages().getString("dialog.not_white_turn_to_play");
+                JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
                 return;
             } else if (piece != null && piece.getColor().equals(ChessColor.BLACK) && this.game.isWhiteTurn()) {
-                JOptionPane.showMessageDialog(this, "Ce n'est pas au noir de jouer!", "Erreur", JOptionPane.ERROR_MESSAGE);
+                String message = this.chessGameFrame.getMessages().getString("dialog.not_black_turn_to_play");
+                JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
                 return;
 
             }
             selected = new Coordinate(x, y);
-            squares[x][y].setBackground(Color.YELLOW);
+            squares[x][y].setSelected(true);
         } else {
             // Si on clique deux fois sur la même case, annule la sélection
             if (selected.getX() == x && selected.getY() == y) {
@@ -116,7 +92,7 @@ public class ChessBoardPanel extends JPanel {
     private void resetSelection() {
         for (int x = 7; x >= 0; x--) {
             for (int y = 0; y < 8; y++) {
-                squares[x][y].setBackground((x + y + 1) % 2 == 0 ? Color.WHITE : Color.LIGHT_GRAY);
+                squares[x][y].setSelected(false);
             }
         }
         selected = null;
@@ -131,37 +107,14 @@ public class ChessBoardPanel extends JPanel {
     public void updateBoard(ChessBoard board) {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                JButton button = squares[x][y];
                 ChessPiece piece = board.getPieceAt(x, y);
-                Color bg = ((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY;
-                if (piece != null) {
-                    if (piece.getType() == ChessPieceType.KING && kingInCheckCoordinate != null) {
-                        ChessUtils.log("Roi en échec en " + kingInCheckCoordinate);
-                        //button.setBackground(Color.ORANGE);
-                    }
-                    button.setText(getBtnLabel(piece, x, y));
-                } else {
-                    button.setText("");
-                }
-                button.setBackground(((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY);
-
+                squares[x][y].setPiece(piece);
             }
         }
     }
 
-    /**
-     * Returns the label for a button based on the piece type and color.
-     * <p>The String representation of a piece is an unicode letter representing a piece</p>
-     *
-     * @param piece The ChessPiece to get the label for.
-     * @param x     The x-coordinate of the button.
-     * @param y     The y-coordinate of the button.
-     * @return A string representing the piece, or an empty string if no piece is present.
-     */
-    private String getBtnLabel(ChessPiece piece, int x, int y) {
-        if (piece == null) {
-            return "";
-        }
+    private String getPieceUnicode(ChessPiece piece) {
+        if (piece == null) return "";
         ChessPieceType type = piece.getType();
         ChessColor color = piece.getColor();
         switch (type) {
@@ -184,5 +137,56 @@ public class ChessBoardPanel extends JPanel {
 
     public interface MoveListener {
         void onMove(Coordinate from, Coordinate to);
+    }
+
+    private class SquarePanel extends JPanel {
+        private final int x, y;
+        private final JLabel letterLabel;
+        private final JLabel numberLabel;
+        private final JLabel pieceLabel;
+        private boolean selected = false;
+
+        public SquarePanel(int x, int y) {
+            this.x = x;
+            this.y = y;
+            setLayout(new BorderLayout());
+            setBackground(((x + y + 1) % 2 == 0) ? Color.WHITE : Color.LIGHT_GRAY);
+            setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            // Number label (first column)
+            if (y == 0) {
+                numberLabel = new JLabel(String.valueOf(x + 1), SwingConstants.LEFT);
+                numberLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                add(numberLabel, BorderLayout.WEST);
+            } else {
+                numberLabel = null;
+            }
+            // Letter label (first row)
+            if (x == 0) {
+                letterLabel = new JLabel(String.valueOf((char) ('A' + y)), SwingConstants.CENTER);
+                letterLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                add(letterLabel, BorderLayout.SOUTH);
+            } else {
+                letterLabel = null;
+            }
+            // Piece label (center)
+            pieceLabel = new JLabel("", SwingConstants.CENTER);
+            pieceLabel.setFont(new Font("Segoe UI Symbol", Font.BOLD, 30));
+            add(pieceLabel, BorderLayout.CENTER);
+            // Mouse click
+            addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    handleSquareClick(x, y);
+                }
+            });
+        }
+
+        public void setPiece(ChessPiece piece) {
+            pieceLabel.setText(getPieceUnicode(piece));
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+            setBackground(selected ? Color.YELLOW : ((x + y + 1) % 2 == 0 ? Color.WHITE : Color.LIGHT_GRAY));
+        }
     }
 }
