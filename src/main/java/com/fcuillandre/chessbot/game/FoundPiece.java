@@ -2,13 +2,18 @@ package com.fcuillandre.chessbot.game;
 
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Represents a chess piece found at a specific coordinate on the chessboard.
+ *
+ * @author FCuillandre
+ * @version 1.0
+ */
 @Getter
-@Setter
 @ToString
-public class FoundPiece {
+public final class FoundPiece {
+
     private final Coordinate coordinate;
     private final ChessPiece piece;
 

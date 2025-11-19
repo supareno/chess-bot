@@ -99,17 +99,4 @@ public enum ChessCaseEnumeration {
     ChessCaseEnumeration(int x, int y) {
         this.coordinate = new Coordinate(x, y);
     }
-
-
-    /**
-     * Returns the chess case name in the format "A1", "B2", etc.
-     * @return the chess case name
-     */
-    public static ChessCaseEnumeration fromString(String caseName) {
-        try {
-            return ChessCaseEnumeration.valueOf(caseName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid chess case name: " + caseName, e);
-        }
-    }
 }

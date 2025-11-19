@@ -178,7 +178,6 @@ public final class ChessGame {
             whiteTurn = !whiteTurn; // Switch turn
         } else {
             ChessUtils.log("Argh, move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is NOT a valid move");
-            ChessUtils.log("---");
         }
     }
 
@@ -223,6 +222,10 @@ public final class ChessGame {
         moveHistory.add(move);
     }
 
+    /**
+     * Undoes the last move made on the chess board.
+     * <p>This method restores the board to its previous state before the last move was made.</p>
+     */
     public void undoMove() {
         if (moveHistory.isEmpty()) {
             ChessUtils.log("No moves to undo.");
@@ -249,6 +252,10 @@ public final class ChessGame {
         whiteTurn = !whiteTurn;
     }
 
+    /**
+     * Clears the move history.
+     * <p>This method removes all recorded moves from the move history.</p>
+     */
     public void clearMoveHistory() {
         moveHistory.clear();
     }
@@ -298,18 +305,12 @@ public final class ChessGame {
     }
 
     /**
-     * Returns the coordinate of the king for the given color, or null if not found.
-     */
-    public Coordinate getKingCoordinate(ChessColor color) {
-        FoundPiece king = findKing(color);
-        return king != null ? king.getCoordinate() : null;
-    }
-
-    /**
-     * Simule un coup et vérifie si le roi du joueur n'est plus en échec après ce coup.
+     * Checks if a move resolves a check situation.
+     * @param move The move to check
+     * @return true if the move resolves the check, false otherwise
      */
     private boolean doesMoveResolveCheck(Move move) {
-        // Sauvegarde l'état du plateau
+        // Save board
         ChessPiece[][] backup = new ChessPiece[8][8];
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -317,10 +318,10 @@ public final class ChessGame {
                 backup[i][j] = p == null ? null : new ChessPiece(p.getColor(), p.getType());
             }
         }
-        // Joue le coup
+        // Play the move
         board.move(move);
         boolean stillInCheck = isKingInCheck();
-        // Annule le coup
+        // Cancel the move
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 board.setPieceAt(i, j, backup[i][j]);

@@ -6,7 +6,8 @@ import lombok.Getter;
  * Enum representing the different types of chess pieces.
  * Each piece type has a short name used in chess notation.
  *
- * @author fcuillan
+ * @author FCuillandre
+ * @version 1.0
  */
 @Getter
 public enum ChessPieceType {

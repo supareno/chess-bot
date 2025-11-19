@@ -13,7 +13,7 @@ import lombok.Getter;
  * @version 1.0
  */
 @Getter
-public class ChessBoard {
+public final class ChessBoard {
 
     private final ChessPiece[][] board;
     private final String[][] cases;

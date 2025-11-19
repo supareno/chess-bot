@@ -20,7 +20,7 @@ import java.awt.*;
  * @author FCuillandre
  * @version 1.0
  */
-public class ChessBoardPanel extends JPanel {
+public final class ChessBoardPanel extends JPanel {
 
     private final SquarePanel[][] squares = new SquarePanel[8][8];
     private final ChessGame game;
@@ -58,9 +58,15 @@ public class ChessBoardPanel extends JPanel {
         updateBoard(this.game.getBoard());
     }
 
+    /**
+     * Handles a click on a square at the given coordinates.
+     * If no piece is selected, selects the piece at the clicked square.
+     * If a piece is already selected, attempts to move it to the clicked square.
+     *
+     * @param x The x-coordinate of the clicked square (0-7).
+     * @param y The y-coordinate of the clicked square (0-7).
+     */
     private void handleSquareClick(int x, int y) {
-
-
         if (selected == null) {
             ChessPiece piece = this.game.getBoard().getPieceAt(x, y);
             String title = this.chessGameFrame.getMessages().getString("dialog.error_title");

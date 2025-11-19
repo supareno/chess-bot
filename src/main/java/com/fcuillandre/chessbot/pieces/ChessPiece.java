@@ -15,14 +15,14 @@ public final class ChessPiece {
     private final ChessColor color;
     private final ChessPieceType type;
 
+    /**
+     * Constructs a ChessPiece with the specified color and type.
+     *
+     * @param color the color of the chess piece (WHITE or BLACK)
+     * @param type  the type of the chess piece (e.g., PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING)
+     */
     public ChessPiece(ChessColor color, ChessPieceType type) {
         this.color = color;
         this.type = type;
     }
-
-    @Override
-    public String toString() {
-        return getColor() == ChessColor.WHITE ? getType().getShortName() : getType().getShortName().toLowerCase();
-    }
-
 }

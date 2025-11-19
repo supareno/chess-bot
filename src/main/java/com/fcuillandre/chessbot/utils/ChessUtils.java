@@ -7,7 +7,7 @@ import static com.fcuillandre.chessbot.pieces.ChessPieces.*;
 /**
  * Utility class for chess-related functions.
  *
- * @author fcuillandre
+ * @author FCuillandre
  * @version 1.0
  */
 public class ChessUtils {

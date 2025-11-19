@@ -22,6 +22,13 @@ import java.util.ResourceBundle;
  */
 public class ChessGameFrame extends JFrame {
 
+    private static final com.fcuillandre.chessbot.pieces.ChessPieceType[] PROMOTION_OPTIONS = {
+            com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
+            com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
+            com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
+            com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
+    };
+
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
@@ -163,8 +170,10 @@ public class ChessGameFrame extends JFrame {
     }
 
     private void onInfos() {
-        String info = messages.getString("dialog.about");
-        JOptionPane.showMessageDialog(this, info, messages.getString("menu.infos"), JOptionPane.INFORMATION_MESSAGE);
+        displayMessage(this,
+                messages.getString("dialog.about"),
+                messages.getString("menu.infos"),
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void handleMove(Coordinate from, Coordinate to) {
@@ -253,12 +262,6 @@ public class ChessGameFrame extends JFrame {
             com.fcuillandre.chessbot.pieces.ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
             if (promotedPawn != null && promotedPawn.getType() == com.fcuillandre.chessbot.pieces.ChessPieceType.PAWN) {
                 if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE && endX == 7) {
-                    com.fcuillandre.chessbot.pieces.ChessPieceType[] options = {
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
-                    };
                     String[] optionNames = {
                             messages.getString("piece.queen"),
                             messages.getString("piece.rook"),
@@ -273,19 +276,13 @@ public class ChessGameFrame extends JFrame {
                             null,
                             optionNames,
                             optionNames[0]);
-                    if (choice >= 0 && choice < options.length) {
-                        game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), options[choice]);
+                    if (choice >= 0 && choice < PROMOTION_OPTIONS.length) {
+                        game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), PROMOTION_OPTIONS[choice]);
                         refresh();
                     }
                 } else if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.BLACK && endX == 0) {
-                    com.fcuillandre.chessbot.pieces.ChessPieceType[] options = {
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
-                            com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
-                    };
-                    int idx = (int) (Math.random() * options.length);
-                    game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), options[idx]);
+                    int idx = (int) (Math.random() * PROMOTION_OPTIONS.length);
+                    game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), PROMOTION_OPTIONS[idx]);
                     refresh();
                 }
             }

@@ -5,7 +5,7 @@ import com.fcuillandre.chessbot.game.ChessGame;
 /**
  * Main class to start the Chess application.
  *
- * @author fcuillandre
+ * @author FCuillandre
  * @version 1.0
  */
 public class ChessApp {
