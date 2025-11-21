@@ -24,7 +24,7 @@ import lombok.Setter;
 public final class ChessGame {
 
     @Getter
-    private final java.util.List<Move> moveHistory = new java.util.ArrayList<>();
+    private final java.util.List<MovedPiece> moveHistory = new java.util.ArrayList<>();
     @Getter
     private ChessBoard board;
     @Getter
@@ -37,7 +37,7 @@ public final class ChessGame {
     private boolean blackKingsideRookMoved = false;
     private boolean blackQueensideRookMoved = false;
     @Getter
-    private Move lastMove = null;
+    private MovedPiece lastMove = null;
     @Setter
     @Getter
     private boolean enPassant = false;
@@ -131,6 +131,7 @@ public final class ChessGame {
         int endX = move.getEnd().getX();
         int endY = move.getEnd().getY();
         enPassant = false;
+        ChessPiece capturedPiece = this.board.getPieceAt(endX, endY); // Capture detection BEFORE move
         if (isValidMove(move)) {
             ChessUtils.log("Move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is a valid move");
             ChessUtils.log("---");
@@ -139,16 +140,13 @@ public final class ChessGame {
             boolean isCastling = isKing && Math.abs(endY - startY) == 2 && startX == endX;
 
             this.board.move(move);
-            addMoveToHistory(move);
+            addMoveToHistory(move, capturedPiece);
             if (enPassant) {
-                // Retire le pion adverse pris en passant. le pion adverse est celui qui a été déplacé de deux cases lors du dernier coup
-                Move lastMove = this.lastMove;
-                int endXLast = lastMove.getEnd().getX();
-                int endYLast = lastMove.getEnd().getY();
+                int endXLast = this.lastMove.getEnd().getX();
+                int endYLast = this.lastMove.getEnd().getY();
                 board.getBoard()[endXLast][endYLast] = null;
             }
             if (isCastling) {
-                // Déplacement de la tour lors du roque
                 boolean kingside = endY < startY;
                 int rookStartY = kingside ? 0 : 7;
                 int rookEndY = kingside ? endY + 1 : endY - 1;
@@ -158,7 +156,6 @@ public final class ChessGame {
                                 new Coordinate(startX, rookEndY)));
             }
             if (piece != null) {
-                // Suivi du premier mouvement du roi et des tours
                 if (piece.getType() == ChessPieceType.KING) {
                     if (piece.getColor() == ChessColor.WHITE) whiteKingMoved = true;
                     else blackKingMoved = true;
@@ -172,9 +169,7 @@ public final class ChessGame {
                     }
                 }
             }
-            // Pawn promotion detection (UI must call promotePawn after move if needed)
-            // No automatic promotion here; UI will handle it after move
-            lastMove = move;
+            lastMove = getMovedPiece(move, capturedPiece);
             whiteTurn = !whiteTurn; // Switch turn
         } else {
             ChessUtils.log("Argh, move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is NOT a valid move");
@@ -218,8 +213,45 @@ public final class ChessGame {
         return blackQueensideRookMoved;
     }
 
-    public void addMoveToHistory(Move move) {
-        moveHistory.add(move);
+    public void addMoveToHistory(Move move, ChessPiece capturedPiece) {
+        MovedPiece movedPiece = getMovedPiece(move, capturedPiece);
+        moveHistory.add(movedPiece);
+        lastMove = movedPiece;
+    }
+
+    private MovedPiece getMovedPiece(Move move, ChessPiece capturedPiece) {
+        int startX = move.getStart().getX();
+        int startY = move.getStart().getY();
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessPiece piece = this.board.getPieceAt(endX, endY); // After move
+        ChessPieceType promotionPieceType = null;
+        boolean isCapture = capturedPiece != null;
+        boolean isCheck = isKingInCheck();
+        boolean isCheckmate = isCheckmate();
+        boolean isCastleKingSide = false;
+        boolean isCastleQueenSide = false;
+        boolean isEnPassant = enPassant;
+        if (piece != null && piece.getType() == ChessPieceType.KING && Math.abs(endY - startY) == 2 && startX == endX) {
+            if (endY > startY) {
+                isCastleKingSide = true;
+            } else {
+                isCastleQueenSide = true;
+            }
+        }
+        MovedPiece movedPiece = new MovedPiece(
+                piece,
+                move.getStart(),
+                move.getEnd(),
+                isCapture,
+                isCheck,
+                isCheckmate,
+                isCastleKingSide,
+                isCastleQueenSide,
+                isEnPassant,
+                promotionPieceType
+        );
+        return movedPiece;
     }
 
     /**
@@ -231,23 +263,19 @@ public final class ChessGame {
             ChessUtils.log("No moves to undo.");
             return;
         }
-        Move lastMove = moveHistory.remove(moveHistory.size() - 1);
-        int startX = lastMove.getStart().getX();
-        int startY = lastMove.getStart().getY();
-        int endX = lastMove.getEnd().getX();
-        int endY = lastMove.getEnd().getY();
-
+        MovedPiece lastMovedPiece = moveHistory.remove(moveHistory.size() - 1);
+        int startX = lastMovedPiece.getStart().getX();
+        int startY = lastMovedPiece.getStart().getY();
+        int endX = lastMovedPiece.getEnd().getX();
+        int endY = lastMovedPiece.getEnd().getY();
         // Restore the piece at the starting position
         ChessPiece piece = this.board.getPieceAt(endX, endY);
         this.board.setPieceAt(startX, startY, piece);
         this.board.setPieceAt(endX, endY, null);
-
         // Handle special cases like en passant and castling
-        if (enPassant && piece != null && piece.getType() == ChessPieceType.PAWN) {
-            // Restore the pawn that was captured en passant
+        if (lastMovedPiece.isEnPassant() && piece != null && piece.getType() == ChessPieceType.PAWN) {
             this.board.setPieceAt(endX, endY + (piece.getColor() == ChessColor.WHITE ? -1 : 1), new ChessPiece(ChessColor.BLACK, ChessPieceType.PAWN));
         }
-
         // Reset the turn
         whiteTurn = !whiteTurn;
     }
@@ -395,8 +423,28 @@ public final class ChessGame {
      */
     public void promotePawn(Coordinate coord, ChessPieceType newType) {
         ChessPiece pawn = board.getPieceAt(coord.getX(), coord.getY());
-        if (pawn == null || pawn.getType() != ChessPieceType.PAWN) return;
-        if (newType == ChessPieceType.KING || newType == ChessPieceType.PAWN) return;
+        if (pawn == null || pawn.getType() != ChessPieceType.PAWN) {
+            return;
+        }
+        if (newType == ChessPieceType.KING || newType == ChessPieceType.PAWN) {
+            return;
+        }
         board.setPieceAt(coord.getX(), coord.getY(), new ChessPiece(pawn.getColor(), newType));
+        // get the last moved piece and update its promotion type
+        MovedPiece movedPiece = getLastWhiteMove();
+        if (movedPiece != null) {
+            movedPiece.setPromotionPieceType(newType);
+        }
+    }
+
+    private MovedPiece getLastWhiteMove() {
+        for (int i = moveHistory.size() - 1; i >= 0; i--) {
+            MovedPiece mp = moveHistory.get(i);
+            if (mp.getPiece().getColor() == ChessColor.WHITE) {
+                return mp;
+            }
+        }
+        return null;
     }
 }
+

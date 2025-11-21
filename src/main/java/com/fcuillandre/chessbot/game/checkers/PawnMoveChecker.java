@@ -50,7 +50,7 @@ public final class PawnMoveChecker extends AbstractMoveChecker {
         // Prise en passant
         int enPassantRow = isWhite ? 4 : 3;
         if (startX == enPassantRow && Math.abs(endY - startY) == 1 && endX - startX == direction) {
-            Move lastMove = game.getLastMove();
+            Move lastMove = new Move(  game.getLastMove().getStart(), game.getLastMove().getEnd());
             if (lastMove != null) {
                 int lmStartX = lastMove.getStart().getX();
                 int lmStartY = lastMove.getStart().getY();

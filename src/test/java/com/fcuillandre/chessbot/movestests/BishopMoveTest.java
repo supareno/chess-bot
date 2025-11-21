@@ -1,4 +1,4 @@
-package com.chessbot.com.fcuillandre;
+package com.fcuillandre.chessbot.movestests;
 
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Move;

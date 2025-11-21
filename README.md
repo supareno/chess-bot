@@ -1,28 +1,48 @@
 # Chess Bot
 
-This project is a chess bot developed in Java. It utilizes a simple AI to play chess against human players. 
-The bot evaluates positions and makes moves based on its internal logic.
+A Java-based chess bot featuring a graphical user interface (GUI) and basic AI. Play chess against the computer, with 
+support for standard chess rules.
+
+## Features
+
+- Play chess against a bot opponent
+- Java Swing GUI for interactive play
+- Standard chess rules implemented (Castling kingside and queenside, En passant, ...)
+- Move history displayed in algebraic notation
+- Playing against different levels of AI difficulty
+- Move validation per piece type
 
 ## Prerequisites
 
-This project requires the following software to be installed on your machine:
 - Java Development Kit (JDK) 17 or higher
 - Maven 3.6 or higher
 
-## Bot Modes
+## Architecture
 
-### Random bot mode
+The project follows a layered architecture:
 
-One mode is implemented for the bot to play against a human player. It is the random move selection mode, where the bot 
-selects a move randomly from the list of legal moves.
+| Layer        | Description                                      | Key Classes/Packages                  |
+|--------------|--------------------------------------------------|---------------------------------------|
+| Model        | Core game logic, board, pieces, rules            | `ChessBoard`, `ChessPiece`, `Move`    |
+| View         | Swing GUI components                             | `ChessGameFrame`, `ChessBoardPanel`   |
+| Controller   | Game state, move validation, turn management     | `ChessGame`                          |
+| AI           | Bot move selection logic                         | `ChessBot`                           |
+| Utilities    | Helpers, logging, move formatting                | `ChessUtils`, `ChessMoveFormatterUtils`|
+
+See the [Architecture Overview](assets/architecture.md) for detailed diagrams.
 
 ## Project Structure
 
-- `src/main/java/com/chessbot/`: Contains the main source code for the chess bot.
-- `src/test/java/com/chessbot/`: Contains unit tests for the chess bot.
-- `pom.xml`: Maven configuration file for managing dependencies and build process.
-- `README.md`: This file, providing an overview and instructions for the project.
-- `LICENSE`: License information for the project.
+```
+com.fcuillandre.chessbot/
+├── board/          # Board representation and case enumeration
+├── bot/            # AI implementation
+├── game/           # Core game logic and move management
+│   └── checkers/   # Move validation strategies per piece type
+├── pieces/         # Piece definitions, types, and colors
+├── ui/             # Swing GUI components
+└── utils/          # Helper utilities and formatters
+```
 
 ## Setup Instructions
 
@@ -30,29 +50,56 @@ selects a move randomly from the list of legal moves.
    ```
    git clone <repository-url>
    ```
-
 2. Navigate to the project directory:
    ```
    cd chess-bot
    ```
-
 3. Build the project using Maven:
    ```
    mvn clean install
    ```
-   
-4. Run the test using Maven:
+4. Run the tests using Maven:
    ```
    mvn clean test
    ```
 
 ## Usage
 
-To run the chess bot, execute the following command:
+To run the chess bot GUI, execute:
 ```
-mvn exec:java -Dexec.mainClass="com.chessbot.App"
+mvn exec:java -Dexec.mainClass="com.fcuillandre.chessbot.ChessApp"
 ```
+
+## Screenshots
+
+<!-- Add screenshots of the GUI here -->
+
+## Testing
+
+- Unit tests are provided for all major game logic components
+- Run tests with:
+  ```
+  mvn test
+  ```
+- Test coverage includes move validation, special rules, and edge cases
 
 ## Contributing
 
-Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
+Contributions are welcome! Please:
+- Follow code style and architecture guidelines
+- Add tests for new features and bug fixes
+- Submit pull requests with clear descriptions
+- Open issues for bugs or feature requests
+
+See [here](CONTRIBUTING.md) for more details.
+
+## Resources
+
+- [Official Chess Rules](https://www.fide.com/FIDE/handbook/LawsOfChess.pdf)
+- [Swing Documentation](https://docs.oracle.com/javase/tutorial/uiswing/)
+- [Lombok Documentation](https://projectlombok.org/)
+- [Algebraic Notation (Wikipedia)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
+
+## License
+
+See [LICENCE.txt](LICENCE.txt) for license information.

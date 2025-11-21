@@ -4,6 +4,7 @@ import com.fcuillandre.chessbot.bot.ChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.game.Move;
+import com.fcuillandre.chessbot.utils.ChessMoveFormatterUtils;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -255,7 +256,7 @@ public class ChessGameFrame extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
             }
         }
-        Move lastMove = game.getLastMove();
+        Move lastMove = new Move(game.getLastMove().getStart(), game.getLastMove().getEnd());
         if (lastMove != null) {
             int endX = lastMove.getEnd().getX();
             int endY = lastMove.getEnd().getY();
@@ -296,15 +297,15 @@ public class ChessGameFrame extends JFrame {
     private void refreshMoveList() {
         moveListModel.clear();
         for (int i = 0; i < game.getMoveHistory().size(); i += 2) {
-            Move whiteMove = game.getMoveHistory().get(i);
-            Move blackMove = (i + 1 < game.getMoveHistory().size()) ? game.getMoveHistory().get(i + 1) : null;
+            com.fcuillandre.chessbot.game.MovedPiece whiteMove = game.getMoveHistory().get(i);
+            com.fcuillandre.chessbot.game.MovedPiece blackMove = (i + 1 < game.getMoveHistory().size()) ? game.getMoveHistory().get(i + 1) : null;
             if (whiteMove == null && blackMove == null) continue;
-            String line = this.getIndex(i) + " : ";
+            String line = this.getIndex(i) + ". ";
             if (whiteMove != null) {
-                line += formatMove(whiteMove.getStart(), whiteMove.getEnd());
+                line += ChessMoveFormatterUtils.formatMove(whiteMove);
             }
             if (blackMove != null) {
-                line += " / " + formatMove(blackMove.getStart(), blackMove.getEnd());
+                line += " " + ChessMoveFormatterUtils.formatMove(blackMove);
             }
             moveListModel.addElement(line);
         }
@@ -313,14 +314,6 @@ public class ChessGameFrame extends JFrame {
     private String getIndex(int i) {
         if (i == 0) return "1";
         return String.valueOf((i / 2) + 1);
-    }
-
-    private String formatMove(Coordinate from, Coordinate to) {
-        char colFrom = (char) ('a' + from.getY());
-        int rowFrom = 1 + from.getX();
-        char colTo = (char) ('a' + to.getY());
-        int rowTo = 1 + to.getX();
-        return "" + colFrom + rowFrom + "-" + colTo + rowTo;
     }
 
     private void updateTurnLabel() {

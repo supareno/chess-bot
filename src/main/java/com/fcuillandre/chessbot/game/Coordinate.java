@@ -1,5 +1,6 @@
 package com.fcuillandre.chessbot.game;
 
+import com.fcuillandre.chessbot.board.ChessCaseEnumeration;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -32,6 +33,14 @@ public final class Coordinate {
         }
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Constructs a Coordinate from a ChessCaseEnumeration.
+     * @param chessCase The chess case enumeration.
+     */
+    public Coordinate(ChessCaseEnumeration chessCase) {
+        this(chessCase.getCoordinate().getX(), chessCase.getCoordinate().getY());
     }
 
     @Override
