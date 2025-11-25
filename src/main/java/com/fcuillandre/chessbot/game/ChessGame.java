@@ -140,7 +140,7 @@ public final class ChessGame {
             boolean isCastling = isKing && Math.abs(endY - startY) == 2 && startX == endX;
 
             this.board.move(move);
-            addMoveToHistory(move, capturedPiece);
+            addMoveToHistory(move, capturedPiece); // problem here: check is not updated correctly in the move list
             if (enPassant) {
                 int endXLast = this.lastMove.getEnd().getX();
                 int endYLast = this.lastMove.getEnd().getY();
