@@ -4,6 +4,10 @@ import com.fcuillandre.chessbot.bot.ChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.game.Move;
+import com.fcuillandre.chessbot.game.MovedPiece;
+import com.fcuillandre.chessbot.pieces.ChessColor;
+import com.fcuillandre.chessbot.pieces.ChessPiece;
+import com.fcuillandre.chessbot.pieces.ChessPieceType;
 import com.fcuillandre.chessbot.utils.ChessMoveFormatterUtils;
 import lombok.Getter;
 
@@ -182,14 +186,12 @@ public class ChessGameFrame extends JFrame {
         Move move = new Move(from, to);
         if (game.isValidMove(move)) {
             game.makeMove(move);
-            refreshMoveList();
-            if (game.isKingInCheck()) {
-                updateTurnLabelWithCheck();
-            } else {
-                updateTurnLabel();
-            }
-            refresh();
+
+            MovedPiece lastMovedPiece = game.getLastMove();
+
             if (game.isCheckmate()) {
+                lastMovedPiece.setCheckmate(true);
+                refreshAll();
                 gameOver = true;
                 displayMessage(this,
                         MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
@@ -198,6 +200,8 @@ public class ChessGameFrame extends JFrame {
                 return;
             }
             if (game.isStalemate()) {
+                lastMovedPiece.setStalemate(true);
+                refreshAll();
                 gameOver = true;
                 displayMessage(this,
                         messages.getString("dialog.stalemate"),
@@ -216,14 +220,10 @@ public class ChessGameFrame extends JFrame {
                     if (botMove != null) {
                         SwingUtilities.invokeLater(() -> {
                             game.makeMove(botMove);
-                            refreshMoveList();
-                            refresh();
-                            if (game.isKingInCheck()) {
-                                updateTurnLabelWithCheck();
-                            } else {
-                                updateTurnLabel();
-                            }
+
                             if (game.isCheckmate()) {
+                                lastMovedPiece.setCheckmate(true);
+                                refreshAll();
                                 gameOver = true;
                                 displayMessage(this,
                                         MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
@@ -232,6 +232,8 @@ public class ChessGameFrame extends JFrame {
                                 return;
                             }
                             if (game.isStalemate()) {
+                                lastMovedPiece.setStalemate(true);
+                                refreshAll();
                                 gameOver = true;
                                 displayMessage(this,
                                         messages.getString("dialog.stalemate"),
@@ -239,6 +241,7 @@ public class ChessGameFrame extends JFrame {
                                         JOptionPane.INFORMATION_MESSAGE);
                                 return;
                             }
+                            refreshAll();
                         });
                     }
                 }).start();
@@ -258,11 +261,13 @@ public class ChessGameFrame extends JFrame {
         }
         Move lastMove = new Move(game.getLastMove().getStart(), game.getLastMove().getEnd());
         if (lastMove != null) {
+            MovedPiece lastMovedPiece = game.getLastMove();
+
             int endX = lastMove.getEnd().getX();
             int endY = lastMove.getEnd().getY();
-            com.fcuillandre.chessbot.pieces.ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
-            if (promotedPawn != null && promotedPawn.getType() == com.fcuillandre.chessbot.pieces.ChessPieceType.PAWN) {
-                if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE && endX == 7) {
+            ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
+            if (promotedPawn != null && promotedPawn.getType() == ChessPieceType.PAWN) {
+                if (promotedPawn.getColor() == ChessColor.WHITE && endX == 7) {
                     String[] optionNames = {
                             messages.getString("piece.queen"),
                             messages.getString("piece.rook"),
@@ -279,15 +284,31 @@ public class ChessGameFrame extends JFrame {
                             optionNames[0]);
                     if (choice >= 0 && choice < PROMOTION_OPTIONS.length) {
                         game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), PROMOTION_OPTIONS[choice]);
-                        refresh();
+                        //refresh();
+                        lastMovedPiece.setPromotionPieceType(PROMOTION_OPTIONS[choice]);
                     }
                 } else if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.BLACK && endX == 0) {
                     int idx = (int) (Math.random() * PROMOTION_OPTIONS.length);
                     game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), PROMOTION_OPTIONS[idx]);
-                    refresh();
+                    //refresh();
+                    lastMovedPiece.setPromotionPieceType(PROMOTION_OPTIONS[idx]);
                 }
             }
         }
+        // Update move list and turn label
+
+        refreshAll();
+    }
+
+    private void refreshAll() {
+        if (game.isKingInCheck()) {
+            game.getLastMove().setCheck(true);
+            updateTurnLabelWithCheck();
+        } else {
+            updateTurnLabel();
+        }
+        refreshMoveList();
+        refresh();
     }
 
     private void displayMessage(Component parentComponent, String message, String title, int messageType) {

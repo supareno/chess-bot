@@ -9,19 +9,19 @@ import lombok.Setter;
  * Represents a move made by a piece, including all relevant information for algebraic notation and display.
  */
 @Getter
+@Setter
 public class MovedPiece {
 
-    private final ChessPiece piece;
-    private final Coordinate start;
-    private final Coordinate end;
-    private final boolean isCapture;
-    private final boolean isCheck;
-    private final boolean isCheckmate;
-    private final boolean isCastleKingSide;
-    private final boolean isCastleQueenSide;
-    private final boolean isEnPassant;
-
-    @Setter
+    private ChessPiece piece;
+    private Coordinate start;
+    private Coordinate end;
+    private boolean isCapture;
+    private boolean isCheck;
+    private boolean isCheckmate;
+    private boolean isStalemate = false;
+    private boolean isCastleKingSide;
+    private boolean isCastleQueenSide;
+    private boolean isEnPassant;
     private ChessPieceType promotionPieceType;
 
     public MovedPiece(ChessPiece piece, Coordinate start, Coordinate end,

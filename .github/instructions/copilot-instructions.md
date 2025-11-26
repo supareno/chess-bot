@@ -109,7 +109,7 @@ The language used for the code, comments, and documentation is English.
 
 The project follows a layered architecture with the following layers:
 
-### 1. Model Layer
+#### Model Layer
 Contains the core game logic, including classes for pieces, the board, and game rules.
 
 **Key Classes:**
@@ -118,7 +118,7 @@ Contains the core game logic, including classes for pieces, the board, and game 
 - `ChessPieceType`: Enum for piece types (KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN)
 - `ChessColor`: Enum for piece colors (WHITE, BLACK)
 
-### 2. View Layer
+#### View Layer
 Contains the GUI components using Swing.
 
 **Key Classes:**
@@ -126,7 +126,7 @@ Contains the GUI components using Swing.
 - `ChessBoardPanel`: Visual representation of the chess board
 - UI components for move history, captured pieces, etc.
 
-### 3. Controller Layer
+#### Controller Layer
 Manages user input and updates the model and view accordingly.
 
 **Key Classes:**
@@ -135,13 +135,13 @@ Manages user input and updates the model and view accordingly.
 - `Coordinate`: Immutable representation of a board position (x, y)
 - `MovedPiece`: Record of a completed move with metadata (capture, check, castling, etc.)
 
-### 4. AI Layer
+#### AI Layer
 Contains the logic for the bot's decision-making process.
 
 **Key Classes:**
 - `ChessBot`: AI implementation for move selection
 
-### 5. Game Logic - Checkers
+#### Game Logic - Checkers
 Implements the Strategy pattern for move validation.
 
 **Key Interface:**
@@ -155,7 +155,7 @@ Implements the Strategy pattern for move validation.
 - `QueenMoveChecker`
 - `KingMoveChecker`
 
-### 6. Utilities
+#### Utilities
 Helper functions and common utilities.
 
 **Key Classes:**

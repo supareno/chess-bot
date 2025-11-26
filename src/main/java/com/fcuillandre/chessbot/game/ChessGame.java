@@ -140,11 +140,15 @@ public final class ChessGame {
             boolean isCastling = isKing && Math.abs(endY - startY) == 2 && startX == endX;
 
             this.board.move(move);
-            addMoveToHistory(move, capturedPiece); // problem here: check is not updated correctly in the move list
+
+            MovedPiece movedPiece = this.getMovedPiece(move, capturedPiece);
+
+            //addMoveToHistory(move, capturedPiece); // problem here: check is not updated correctly in the move list
             if (enPassant) {
                 int endXLast = this.lastMove.getEnd().getX();
                 int endYLast = this.lastMove.getEnd().getY();
                 board.getBoard()[endXLast][endYLast] = null;
+                movedPiece.setEnPassant(true);
             }
             if (isCastling) {
                 boolean kingside = endY < startY;
@@ -154,6 +158,13 @@ public final class ChessGame {
                         new Move(
                                 new Coordinate(startX, rookStartY),
                                 new Coordinate(startX, rookEndY)));
+                if (kingside) {
+                    movedPiece.setCastleKingSide(false);
+                    movedPiece.setCastleQueenSide(true);
+                } else {
+                    movedPiece.setCastleKingSide(true);
+                    movedPiece.setCastleQueenSide(false);
+                }
             }
             if (piece != null) {
                 if (piece.getType() == ChessPieceType.KING) {
@@ -169,8 +180,10 @@ public final class ChessGame {
                     }
                 }
             }
-            lastMove = getMovedPiece(move, capturedPiece);
+            lastMove = movedPiece;
             whiteTurn = !whiteTurn; // Switch turn
+
+            moveHistory.add(movedPiece);
         } else {
             ChessUtils.log("Argh, move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is NOT a valid move");
         }
