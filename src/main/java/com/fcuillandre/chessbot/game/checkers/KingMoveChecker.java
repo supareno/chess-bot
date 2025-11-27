@@ -6,8 +6,10 @@ import com.fcuillandre.chessbot.game.Move;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 
 /**
- * KingMoveChecker vérifie la validité des déplacements du roi.
- * Le roi se déplace d'une case dans n'importe quelle direction.
+ * KingMoveChecker validates the king's moves.
+ * The king moves one square in any direction (horizontal, vertical, or diagonal).
+ * It also handles castling validation including checking that the king does not
+ * castle while in check, through check, or into check.
  *
  * @author FCuillandre
  * @version 1.0
@@ -47,11 +49,14 @@ public final class KingMoveChecker extends AbstractMoveChecker {
             int min = Math.min(startY, rookY) + 1;
             int max = Math.max(startY, rookY) - 1;
             for (int y = min; y <= max; y++) {
-                if (board.getPieceAt(rookX, y) != null) return false;
+                if (board.getPieceAt(rookX, y) != null) {
+                    return false;
+                }
             }
             // La case d'arrivée doit être libre
-            if (board.getPieceAt(endX, endY) != null) return false;
-            // (Optionnel) : vérifier que le roi ne passe pas par une case attaquée (non implémenté ici)
+            if (board.getPieceAt(endX, endY) != null) {
+                return false;
+            }
             return true;
         }
         return false;

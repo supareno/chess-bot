@@ -75,6 +75,12 @@ public final class ChessGame {
         boolean valid = getMoveChecker(piece).isValidMove(piece, move, board, this);
         // Si le roi est en échec, n'autoriser que les coups qui le sortent de l'échec
         if (isKingInCheck()) {
+            // check if the move is castling
+            int dx = Math.abs(move.getEnd().getX() - move.getStart().getX());
+            int dy = Math.abs(move.getEnd().getY() - move.getStart().getY());
+            if (dx == 0 && dy == 2) {
+                return false; // castling does not resolve check
+            }
             if (!doesMoveResolveCheck(move)) {
                 return false;
             }
@@ -226,12 +232,6 @@ public final class ChessGame {
         return blackQueensideRookMoved;
     }
 
-    public void addMoveToHistory(Move move, ChessPiece capturedPiece) {
-        MovedPiece movedPiece = getMovedPiece(move, capturedPiece);
-        moveHistory.add(movedPiece);
-        lastMove = movedPiece;
-    }
-
     private MovedPiece getMovedPiece(Move move, ChessPiece capturedPiece) {
         int startX = move.getStart().getX();
         int startY = move.getStart().getY();
@@ -294,14 +294,6 @@ public final class ChessGame {
     }
 
     /**
-     * Clears the move history.
-     * <p>This method removes all recorded moves from the move history.</p>
-     */
-    public void clearMoveHistory() {
-        moveHistory.clear();
-    }
-
-    /**
      * Checks if the king is in check.
      * <p>This method checks if the current player's king is under threat of capture.</p>
      *
@@ -347,6 +339,7 @@ public final class ChessGame {
 
     /**
      * Checks if a move resolves a check situation.
+     *
      * @param move The move to check
      * @return true if the move resolves the check, false otherwise
      */
@@ -373,6 +366,7 @@ public final class ChessGame {
 
     /**
      * Checks if the current player is in checkmate.
+     *
      * @return true if the current player is in checkmate, false otherwise
      */
     public boolean isCheckmate() {
@@ -431,7 +425,8 @@ public final class ChessGame {
 
     /**
      * Promotes a pawn at the given coordinate to the specified piece type.
-     * @param coord The coordinate of the pawn to promote.
+     *
+     * @param coord   The coordinate of the pawn to promote.
      * @param newType The type to promote to (must not be KING or PAWN).
      */
     public void promotePawn(Coordinate coord, ChessPieceType newType) {
