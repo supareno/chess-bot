@@ -21,8 +21,8 @@ public final class BishopMoveChecker extends AbstractMoveChecker {
         int startY = move.getStart().getY();
         int endX = move.getEnd().getX();
         int endY = move.getEnd().getY();
-        ChessBoard board = game.getBoard();
-        // Le fou se déplace uniquement en diagonale
+        ChessBoard board = this.board;
+        // Diagonal movement check
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
         if (dx != dy || dx == 0) return false;
@@ -35,7 +35,7 @@ public final class BishopMoveChecker extends AbstractMoveChecker {
             x += stepX;
             y += stepY;
         }
-        // Vérifie la case d'arrivée
+        // Destination square check
         return board.getPieceAt(endX, endY) == null || board.getPieceAt(endX, endY).getColor() != piece.getColor();
     }
 }

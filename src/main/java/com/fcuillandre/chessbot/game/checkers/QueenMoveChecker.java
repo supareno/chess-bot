@@ -1,9 +1,9 @@
 package com.fcuillandre.chessbot.game.checkers;
 
-import com.fcuillandre.chessbot.pieces.ChessPiece;
-import com.fcuillandre.chessbot.game.Move;
 import com.fcuillandre.chessbot.board.ChessBoard;
 import com.fcuillandre.chessbot.game.ChessGame;
+import com.fcuillandre.chessbot.game.Move;
+import com.fcuillandre.chessbot.pieces.ChessPiece;
 
 /**
  * Checks if a queen's move is valid.
@@ -22,12 +22,12 @@ public final class QueenMoveChecker extends AbstractMoveChecker {
         int startY = move.getStart().getY();
         int endX = move.getEnd().getX();
         int endY = move.getEnd().getY();
-        ChessBoard board = game.getBoard();
+        ChessBoard board = this.board;
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
-        // Mouvement en ligne droite (tour)
+        // Straight line movement (rook)
         if (startX == endX || startY == endY) {
-            // Vérifie qu'il n'y a pas d'obstacle
+            // No obstacles in the path
             if (startX == endX) {
                 int minY = Math.min(startY, endY) + 1;
                 int maxY = Math.max(startY, endY);
@@ -42,7 +42,7 @@ public final class QueenMoveChecker extends AbstractMoveChecker {
                 }
             }
         }
-        // Mouvement en diagonale (fou)
+        // Diagonal movement (like the bishop)
         else if (dx == dy) {
             int stepX = (endX - startX) > 0 ? 1 : -1;
             int stepY = (endY - startY) > 0 ? 1 : -1;
@@ -54,10 +54,9 @@ public final class QueenMoveChecker extends AbstractMoveChecker {
                 y += stepY;
             }
         } else {
-            // Ni ligne droite ni diagonale
             return false;
         }
-        // Vérifie la case d'arrivée
+        // Check destination square
         ChessPiece dest = board.getPieceAt(endX, endY);
         return dest == null || dest.getColor() != piece.getColor();
     }

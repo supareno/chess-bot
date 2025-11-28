@@ -20,12 +20,12 @@ public class KnightMoveChecker extends AbstractMoveChecker {
         int startY = move.getStart().getY();
         int endX = move.getEnd().getX();
         int endY = move.getEnd().getY();
-        ChessBoard board = game.getBoard();
+        ChessBoard board = this.board; // use injected board
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
-        // Le cavalier se déplace en L : 2 cases dans une direction, 1 dans l'autre
+        // L move: 2 in one direction and 1 in the other
         if (!((dx == 2 && dy == 1) || (dx == 1 && dy == 2))) return false;
-        // La case d'arrivée doit être vide ou occupée par une pièce adverse
+        // Destination square must be empty or occupied by opponent
         ChessPiece dest = board.getPieceAt(endX, endY);
         return dest == null || dest.getColor() != piece.getColor();
     }

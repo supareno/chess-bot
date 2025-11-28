@@ -22,15 +22,15 @@ public final class KingMoveChecker extends AbstractMoveChecker {
         int startY = move.getStart().getY();
         int endX = move.getEnd().getX();
         int endY = move.getEnd().getY();
-        ChessBoard board = game.getBoard();
+        ChessBoard board = this.board;
         int dx = Math.abs(endX - startX);
         int dy = Math.abs(endY - startY);
-        // Mouvement normal du roi
+        // king moves one square in any direction
         if ((dx <= 1 && dy <= 1) && !(dx == 0 && dy == 0)) {
             ChessPiece dest = board.getPieceAt(endX, endY);
             return dest == null || dest.getColor() != piece.getColor();
         }
-        // Gestion du roque
+        // Castling
         if (dx == 0 && dy == 2) {
             boolean isWhite = piece.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.WHITE;
             boolean kingMoved = isWhite ? game.hasWhiteKingMoved() : game.hasBlackKingMoved();
@@ -43,9 +43,11 @@ public final class KingMoveChecker extends AbstractMoveChecker {
             } else {
                 rookMoved = kingside ? game.hasBlackKingsideRookMoved() : game.hasBlackQueensideRookMoved();
             }
-            // Le roi et la tour ne doivent pas avoir bougé
-            if (kingMoved || rookMoved) return false;
-            // Les cases entre le roi et la tour doivent être libres
+            // King and rook must not have moved
+            if (kingMoved || rookMoved) {
+                return false;
+            }
+            // Cases between king and rook must be empty
             int min = Math.min(startY, rookY) + 1;
             int max = Math.max(startY, rookY) - 1;
             for (int y = min; y <= max; y++) {
@@ -53,11 +55,8 @@ public final class KingMoveChecker extends AbstractMoveChecker {
                     return false;
                 }
             }
-            // La case d'arrivée doit être libre
-            if (board.getPieceAt(endX, endY) != null) {
-                return false;
-            }
-            return true;
+            // End case must be empty
+            return board.getPieceAt(endX, endY) == null;
         }
         return false;
     }

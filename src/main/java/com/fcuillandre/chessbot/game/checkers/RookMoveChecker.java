@@ -6,9 +6,9 @@ import com.fcuillandre.chessbot.game.Move;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 
 /**
- * Vérifie si le mouvement d'une tour est valide.
- * La tour se déplace uniquement en ligne droite (horizontal ou vertical) et ne peut pas sauter par-dessus d'autres pièces.
- * Elle peut capturer une pièce adverse en se déplaçant sur sa case.
+ * Checks if a rook's move is valid.
+ * The rook moves only in straight lines (horizontal or vertical) and cannot jump over other pieces.
+ * It can capture an opponent's piece by moving onto its square.
  *
  * @author FCuillandre
  * @version 1.0
@@ -21,10 +21,10 @@ public final class RookMoveChecker extends AbstractMoveChecker {
         int startY = move.getStart().getY();
         int endX = move.getEnd().getX();
         int endY = move.getEnd().getY();
-        ChessBoard board = game.getBoard();
-        // La tour se déplace uniquement en ligne droite (horizontal ou vertical)
+        ChessBoard board = this.board;
+        // Horizontal or vertical movement only
         if (startX != endX && startY != endY) return false;
-        // Vérifie qu'il n'y a pas d'obstacle sur le chemin
+        // Path must be clear
         if (startX == endX) {
             int minY = Math.min(startY, endY) + 1;
             int maxY = Math.max(startY, endY);
@@ -38,7 +38,7 @@ public final class RookMoveChecker extends AbstractMoveChecker {
                 if (board.getPieceAt(x, startY) != null) return false;
             }
         }
-        // Vérifie la case d'arrivée
+        // Check destination square
         return board.getPieceAt(endX, endY) == null || board.getPieceAt(endX, endY).getColor() != piece.getColor();
     }
 }

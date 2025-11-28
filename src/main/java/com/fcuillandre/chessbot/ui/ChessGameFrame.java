@@ -1,6 +1,7 @@
 package com.fcuillandre.chessbot.ui;
 
 import com.fcuillandre.chessbot.bot.ChessBot;
+import com.fcuillandre.chessbot.bot.MinimaxChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.game.Move;
@@ -37,7 +38,7 @@ public class ChessGameFrame extends JFrame {
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
-    private final ChessBot bot = new ChessBot();
+    private final ChessBot bot = new MinimaxChessBot();
     private ChessBoardPanel boardPanel;
     private ChessGame game;
     private boolean gameOver = false;

@@ -90,7 +90,7 @@ class KingMoveTest {
         //
         chessGame.makeMove("b1", "c3");
         // Now the king at e1 is in check from the queen at h5
-        assertTrue(!chessGame.isValidMove(new Move(E8, G8))); // King cannot move to E2 as it is in check
+        assertFalse(chessGame.isValidMove(new Move(E8, G8))); // King cannot move to E2 as it is in check
     }
 
     // add a test to verify that a king cannot castle through check
