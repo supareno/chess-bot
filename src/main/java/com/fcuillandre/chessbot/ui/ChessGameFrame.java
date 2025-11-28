@@ -27,13 +27,13 @@ import java.util.ResourceBundle;
  */
 public class ChessGameFrame extends JFrame {
 
+    public static final Font ARIAL_FONT_BOLD_18 = new Font("Arial", Font.BOLD, 18);
     private static final com.fcuillandre.chessbot.pieces.ChessPieceType[] PROMOTION_OPTIONS = {
             com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
             com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
             com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
             com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
     };
-
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
@@ -41,6 +41,7 @@ public class ChessGameFrame extends JFrame {
     private ChessBoardPanel boardPanel;
     private ChessGame game;
     private boolean gameOver = false;
+    private EndGameStatus endGameStatus = EndGameStatus.ONGOING;
     private Locale currentLocale = Locale.getDefault();
     @Getter
     private ResourceBundle messages = ResourceBundle.getBundle("messages", currentLocale);
@@ -191,8 +192,9 @@ public class ChessGameFrame extends JFrame {
 
             if (game.isCheckmate()) {
                 lastMovedPiece.setCheckmate(true);
-                refreshAll();
+                endGameStatus = EndGameStatus.CHECKMATE;
                 gameOver = true;
+                refreshAll();
                 displayMessage(this,
                         MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
                         messages.getString("dialog.checkmate_title"),
@@ -201,8 +203,9 @@ public class ChessGameFrame extends JFrame {
             }
             if (game.isStalemate()) {
                 lastMovedPiece.setStalemate(true);
-                refreshAll();
+                endGameStatus = EndGameStatus.STALEMATE;
                 gameOver = true;
+                refreshAll();
                 displayMessage(this,
                         messages.getString("dialog.stalemate"),
                         messages.getString("dialog.stalemate_title"),
@@ -216,15 +219,16 @@ public class ChessGameFrame extends JFrame {
                     } catch (InterruptedException ignored) {
                     }
                     if (gameOver) return;
-                    Move botMove = bot.getRandomLegalMove(game);
+                    Move botMove = bot.getMove(game);
                     if (botMove != null) {
                         SwingUtilities.invokeLater(() -> {
                             game.makeMove(botMove);
 
                             if (game.isCheckmate()) {
                                 lastMovedPiece.setCheckmate(true);
-                                refreshAll();
+                                endGameStatus = EndGameStatus.CHECKMATE;
                                 gameOver = true;
+                                refreshAll();
                                 displayMessage(this,
                                         MessageFormat.format(messages.getString("dialog.checkmate"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")),
                                         messages.getString("dialog.checkmate_title"),
@@ -233,8 +237,9 @@ public class ChessGameFrame extends JFrame {
                             }
                             if (game.isStalemate()) {
                                 lastMovedPiece.setStalemate(true);
-                                refreshAll();
+                                endGameStatus = EndGameStatus.STALEMATE;
                                 gameOver = true;
+                                refreshAll();
                                 displayMessage(this,
                                         messages.getString("dialog.stalemate"),
                                         messages.getString("dialog.stalemate_title"),
@@ -338,15 +343,27 @@ public class ChessGameFrame extends JFrame {
     }
 
     private void updateTurnLabel() {
-        turnLabel.setText(MessageFormat.format(messages.getString("label.turn"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")));
-        turnLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.updateTurnLabel(messages.getString("label.turn"));
     }
 
     private void updateTurnLabelWithCheck() {
-        turnLabel.setText(MessageFormat.format(messages.getString("label.turn_check"), messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")));
-        turnLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.updateTurnLabel(messages.getString("label.turn_check"));
+    }
+
+    private void updateTurnLabel(String turnLabel) {
+        if (gameOver) {
+            String msg = "";
+            switch (endGameStatus) {
+                case STALEMATE -> msg = messages.getString("dialog.stalemate");
+                case CHECKMATE -> msg = messages.getString("dialog.checkmate");
+                default -> msg = "";
+            }
+            this.turnLabel.setText(MessageFormat.format(msg, messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")));
+        } else {
+            this.turnLabel.setText(MessageFormat.format(turnLabel, messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")));
+        }
+        this.turnLabel.setFont(ARIAL_FONT_BOLD_18);
+        this.turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     public void refresh() {

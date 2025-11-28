@@ -2,6 +2,7 @@
 
 A Java-based chess bot featuring a graphical user interface (GUI) and basic AI. Play chess against the computer, with 
 support for standard chess rules.
+This project is built by Frederic Cuillandre as a personal project to explore chess game development with AI in Java.
 
 ## Features
 
@@ -11,6 +12,10 @@ support for standard chess rules.
 - Move history displayed in algebraic notation
 - Playing against different levels of AI difficulty
 - Move validation per piece type
+
+Bot modes are:
+- Random Move Bot: Selects moves randomly from available legal moves
+- Minimax Bot: Uses the Minimax algorithm with a basic evaluation function
 
 ## Prerequisites
 
