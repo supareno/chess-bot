@@ -35,10 +35,12 @@ public class ChessGameFrame extends JFrame {
             com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
             com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
     };
+    @Getter
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
+    @Getter
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
-    private final ChessBot bot = new MinimaxChessBot();
+    private ChessBot bot = new MinimaxChessBot();
     private ChessBoardPanel boardPanel;
     private ChessGame game;
     private boolean gameOver = false;
@@ -50,11 +52,15 @@ public class ChessGameFrame extends JFrame {
     private JMenu homeMenu;
     private JMenu helpMenu;
     private JMenu languageMenu;
+    private JMenu botLevelMenu;
     private JMenuItem newGameItem;
     private JMenuItem quitItem;
     private JMenuItem infosItem;
     private JMenuItem englishItem;
     private JMenuItem frenchItem;
+    private JRadioButtonMenuItem randomBotItem;
+    private JRadioButtonMenuItem minimaxBotItem;
+    private ButtonGroup botLevelGroup;
 
     /**
      * Constructor for the ChessGameFrame.
@@ -75,14 +81,14 @@ public class ChessGameFrame extends JFrame {
         boardPanel.setMaximumSize(new Dimension(600, 600));
         add(boardPanel, BorderLayout.CENTER);
         moveList.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        moveList.setPreferredSize(new Dimension(180, 600));
         moveList.setMinimumSize(new Dimension(180, 600));
-        moveList.setMaximumSize(new Dimension(180, 600));
+
         JScrollPane moveListScrollPane = new JScrollPane(moveList);
         moveListScrollPane.setPreferredSize(new Dimension(180, 600));
         moveListScrollPane.setMinimumSize(new Dimension(180, 600));
-        moveListScrollPane.setMaximumSize(new Dimension(180, 600));
+        moveListScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(moveListScrollPane, BorderLayout.EAST);
+
         add(turnLabel, BorderLayout.NORTH);
         setSize(800, 600);
         setResizable(false);
@@ -112,7 +118,25 @@ public class ChessGameFrame extends JFrame {
         frenchItem.addActionListener(e -> switchLanguage(Locale.FRENCH));
         languageMenu.add(englishItem);
         languageMenu.add(frenchItem);
+        // Bot level menu
+        botLevelMenu = new JMenu(messages.getString("menu.bot_level"));
+        randomBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_random"));
+        minimaxBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_moderate"));
+        botLevelGroup = new ButtonGroup();
+        botLevelGroup.add(randomBotItem);
+        botLevelGroup.add(minimaxBotItem);
+        // Set initial selection
+        if (bot instanceof com.fcuillandre.chessbot.bot.RandomChessBot) {
+            randomBotItem.setSelected(true);
+        } else {
+            minimaxBotItem.setSelected(true);
+        }
+        randomBotItem.addActionListener(e -> onBotLevelChange("random"));
+        minimaxBotItem.addActionListener(e -> onBotLevelChange("minimax"));
+        botLevelMenu.add(randomBotItem);
+        botLevelMenu.add(minimaxBotItem);
         menuBar.add(homeMenu);
+        menuBar.add(botLevelMenu);
         menuBar.add(helpMenu);
         menuBar.add(languageMenu);
         return menuBar;
@@ -122,6 +146,39 @@ public class ChessGameFrame extends JFrame {
         currentLocale = locale;
         messages = ResourceBundle.getBundle("messages", currentLocale);
         updateAllTexts();
+    }
+
+    private void onBotLevelChange(String level) {
+        int result = JOptionPane.showConfirmDialog(this,
+                messages.getString("dialog.new_game_confirm"),
+                messages.getString("dialog.new_game_title"),
+                JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            if (level.equals("random")) {
+                bot = new com.fcuillandre.chessbot.bot.RandomChessBot();
+                randomBotItem.setSelected(true);
+            } else {
+                bot = new MinimaxChessBot();
+                minimaxBotItem.setSelected(true);
+            }
+            ChessGame newGame = new ChessGame();
+            boardPanel.setMoveListener(null);
+            getContentPane().remove(boardPanel);
+            ChessBoardPanel newBoardPanel = new ChessBoardPanel(this, newGame);
+            newBoardPanel.setPreferredSize(new Dimension(600, 600));
+            add(newBoardPanel, BorderLayout.CENTER);
+            this.moveListModel.clear();
+            this.turnLabel.setText("");
+            this.gameOver = false;
+            this.boardPanel.setVisible(false);
+            this.boardPanel.removeAll();
+            this.game = newGame;
+            this.boardPanel = newBoardPanel;
+            newBoardPanel.setMoveListener(this::handleMove);
+            revalidate();
+            repaint();
+            updateTurnLabel();
+        }
     }
 
     private void updateAllTexts() {
@@ -134,6 +191,15 @@ public class ChessGameFrame extends JFrame {
         languageMenu.setText(messages.getString("menu.language"));
         englishItem.setText(messages.getString("menu.language_english"));
         frenchItem.setText(messages.getString("menu.language_french"));
+        botLevelMenu.setText(messages.getString("menu.bot_level"));
+        randomBotItem.setText(messages.getString("menu.bot_random"));
+        minimaxBotItem.setText(messages.getString("menu.bot_moderate"));
+        // Update selection
+        if (bot instanceof com.fcuillandre.chessbot.bot.RandomChessBot) {
+            randomBotItem.setSelected(true);
+        } else {
+            minimaxBotItem.setSelected(true);
+        }
         updateTurnLabel();
         refreshMoveList();
     }

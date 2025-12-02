@@ -8,7 +8,6 @@ import com.fcuillandre.chessbot.game.checkers.*;
 import com.fcuillandre.chessbot.pieces.ChessColor;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
-import com.fcuillandre.chessbot.utils.ChessUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,11 @@ import java.util.List;
  */
 public class MinimaxChessBot implements ChessBot {
 
-    private final int maxDepth = 3;
+    /*
+     * Depth is set to 4 plies (2 full moves).
+     * Higher depths include latency and performance considerations and the application cannot play.
+     */
+    private final int maxDepth = 4;
 
     @Override
     public Move getMove(ChessGame game) {
@@ -55,7 +58,6 @@ public class MinimaxChessBot implements ChessBot {
         // Terminal checks based on available moves
         List<Move> moves = generateLegalMovesForColor(board, toMove, gameCtx);
         if (moves.isEmpty()) {
-            ChessUtils.log("MinimaxChessBot moves are empty");
             // No legal moves: check if in check -> checkmate, else stalemate
             boolean inCheck = isKingInCheckForColor(board, toMove, gameCtx);
             if (inCheck) {
@@ -71,9 +73,6 @@ public class MinimaxChessBot implements ChessBot {
             ChessBoard next = copyBoard(board);
             applyMoveOnBoard(next, move);
             int score = minimax(next, opposite(toMove), depth - 1, alpha, beta, gameCtx);
-
-            //ChessUtils.log("Move: " + move + " / Score: " + score);
-
             value = Math.max(value, score);
             alpha = Math.max(alpha, value);
             if (alpha >= beta) break;
