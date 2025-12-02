@@ -94,9 +94,22 @@ public enum ChessCaseEnumeration {
     H7(6, 7),
     H8(7, 7);
 
+    private static final ChessCaseEnumeration[] VALUES = values();
+
     private final Coordinate coordinate;
 
     ChessCaseEnumeration(int x, int y) {
         this.coordinate = new Coordinate(x, y);
+    }
+
+    // get by coordinate
+    public static ChessCaseEnumeration getByCoordinate(Coordinate coord) {
+        ChessCaseEnumeration caseEnumeration = null;
+        for (ChessCaseEnumeration chessCase : VALUES) {
+            if (chessCase.getCoordinate().equals(coord)) {
+                caseEnumeration = chessCase;
+            }
+        }
+        return caseEnumeration;
     }
 }

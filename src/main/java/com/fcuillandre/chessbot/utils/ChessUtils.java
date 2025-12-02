@@ -65,13 +65,13 @@ public class ChessUtils {
     public static String[][] initializeCases() {
         // initialize the chessboard cases with coordinates with format "A1", "B2", etc.
         String[][] cases = new String[8][8];
-        char file = 'H';
+        char file = 'A';
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 cases[i][j] = "" + file + (i + 1);
-                file--;
+                file++;
             }
-            file = 'H'; // Reset file for the next row
+            file = 'A'; // Reset file for the next row
         }
         return cases;
     }

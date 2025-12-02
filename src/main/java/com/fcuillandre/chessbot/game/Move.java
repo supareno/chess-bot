@@ -2,6 +2,7 @@ package com.fcuillandre.chessbot.game;
 
 import com.fcuillandre.chessbot.board.ChessCaseEnumeration;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Represents a move in a chess game, defined by starting and ending coordinates.
@@ -37,5 +38,12 @@ public final class Move {
         this.end = end;
     }
 
+    @Override
+    public String toString() {
+        return "Move{" +
+                "start=" + ChessCaseEnumeration.getByCoordinate(start) +
+                ", end=" + ChessCaseEnumeration.getByCoordinate(end) +
+                '}';
+    }
 }
 

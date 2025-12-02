@@ -8,6 +8,7 @@ import com.fcuillandre.chessbot.game.checkers.*;
 import com.fcuillandre.chessbot.pieces.ChessColor;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
+import com.fcuillandre.chessbot.utils.ChessUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,40 +29,33 @@ public class MinimaxChessBot implements ChessBot {
 
     @Override
     public Move getMove(ChessGame game) {
-        ChessColor toMove = game.isWhiteTurn() ? ChessColor.WHITE : ChessColor.BLACK;
+        ChessColor toMove = ChessColor.BLACK;
         List<Move> legalMoves = generateLegalMovesUsingGame(game, toMove);
         if (legalMoves.isEmpty()) return null;
-        boolean maximizing = (toMove == ChessColor.BLACK);
         int depth = game.isKingInCheck() ? Math.max(1, maxDepth - 1) : maxDepth;
         Move best = null;
-        int bestScore = maximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        int bestScore = Integer.MIN_VALUE;
         ChessBoard board = game.getBoard();
         for (Move m : legalMoves) {
             ChessBoard copy = copyBoard(board);
             applyMoveOnBoard(copy, m);
-            int score = minimax(copy, opposite(toMove), depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, !maximizing, game);
-            if (maximizing) {
-                if (score > bestScore) {
-                    bestScore = score;
-                    best = m;
-                }
-            } else {
-                if (score < bestScore) {
-                    bestScore = score;
-                    best = m;
-                }
+            int score = minimax(copy, opposite(toMove), depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, game);
+            if (score > bestScore) {
+                bestScore = score;
+                best = m;
             }
         }
         return best;
     }
 
-    private int minimax(ChessBoard board, ChessColor toMove, int depth, int alpha, int beta, boolean maximizing, ChessGame gameCtx) {
+    private int minimax(ChessBoard board, ChessColor toMove, int depth, int alpha, int beta, ChessGame gameCtx) {
         if (depth == 0) {
             return evaluateBoard(board);
         }
         // Terminal checks based on available moves
         List<Move> moves = generateLegalMovesForColor(board, toMove, gameCtx);
         if (moves.isEmpty()) {
+            ChessUtils.log("MinimaxChessBot moves are empty");
             // No legal moves: check if in check -> checkmate, else stalemate
             boolean inCheck = isKingInCheckForColor(board, toMove, gameCtx);
             if (inCheck) {
@@ -72,29 +66,19 @@ public class MinimaxChessBot implements ChessBot {
                 return 0;
             }
         }
-        if (maximizing) {
-            int value = Integer.MIN_VALUE;
-            for (Move move : moves) {
-                ChessBoard next = copyBoard(board);
-                applyMoveOnBoard(next, move);
-                int score = minimax(next, opposite(toMove), depth - 1, alpha, beta, false, gameCtx);
-                value = Math.max(value, score);
-                alpha = Math.max(alpha, value);
-                if (alpha >= beta) break;
-            }
-            return value;
-        } else {
-            int value = Integer.MAX_VALUE;
-            for (Move move : moves) {
-                ChessBoard next = copyBoard(board);
-                applyMoveOnBoard(next, move);
-                int score = minimax(next, opposite(toMove), depth - 1, alpha, beta, true, gameCtx);
-                value = Math.min(value, score);
-                beta = Math.min(beta, value);
-                if (alpha >= beta) break;
-            }
-            return value;
+        int value = Integer.MIN_VALUE;
+        for (Move move : moves) {
+            ChessBoard next = copyBoard(board);
+            applyMoveOnBoard(next, move);
+            int score = minimax(next, opposite(toMove), depth - 1, alpha, beta, gameCtx);
+
+            //ChessUtils.log("Move: " + move + " / Score: " + score);
+
+            value = Math.max(value, score);
+            alpha = Math.max(alpha, value);
+            if (alpha >= beta) break;
         }
+        return value;
     }
 
     private List<Move> generateLegalMovesForColor(ChessBoard board, ChessColor color, ChessGame gameCtx) {
