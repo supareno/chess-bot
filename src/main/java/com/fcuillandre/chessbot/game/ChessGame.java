@@ -140,12 +140,22 @@ public final class ChessGame {
         ChessPiece capturedPiece = this.board.getPieceAt(endX, endY); // Capture detection BEFORE move
         if (isValidMove(move)) {
             ChessUtils.log("Move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is a valid move");
-            ChessUtils.log("---");
             ChessPiece piece = this.board.getPieceAt(startX, startY);
             boolean isKing = piece != null && piece.getType() == ChessPieceType.KING;
             boolean isCastling = isKing && Math.abs(endY - startY) == 2 && startX == endX;
 
             this.board.move(move);
+
+            // Auto-promotion if a pawn reaches last rank and promotion type is provided or default to QUEEN
+            ChessPiece justMoved = this.board.getPieceAt(endX, endY);
+            if (justMoved != null && justMoved.getType() == ChessPieceType.PAWN) {
+                boolean reachedLastRank = (justMoved.getColor() == ChessColor.WHITE && endX == 7)
+                        || (justMoved.getColor() == ChessColor.BLACK && endX == 0);
+                if (reachedLastRank) {
+                    ChessPieceType promoteTo = move.getPromotionPieceType() != null ? move.getPromotionPieceType() : ChessPieceType.QUEEN;
+                    this.board.setPieceAt(endX, endY, new ChessPiece(justMoved.getColor(), promoteTo));
+                }
+            }
 
             MovedPiece movedPiece = this.getMovedPiece(move, capturedPiece);
 

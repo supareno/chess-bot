@@ -21,6 +21,7 @@ import com.fcuillandre.chessbot.pieces.ChessColor;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.game.Move;
 import com.fcuillandre.chessbot.game.Coordinate;
+import com.fcuillandre.chessbot.pieces.ChessPieceType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,7 +48,13 @@ public class RandomChessBot implements ChessBot {
                     for (int dx = 0; dx < 8; dx++) {
                         for (int dy = 0; dy < 8; dy++) {
                             if (x == dx && y == dy) continue;
-                            Move move = new Move(new Coordinate(x, y), new Coordinate(dx, dy));
+                            Move move;
+                            // Handle black pawn promotion when reaching rank 8 (x == 0)
+                            if (piece.getType() == ChessPieceType.PAWN && dx == 0) {
+                                move = new Move(new Coordinate(x, y), new Coordinate(dx, dy), ChessPieceType.QUEEN);
+                            } else {
+                                move = new Move(new Coordinate(x, y), new Coordinate(dx, dy));
+                            }
                             if (game.isValidMove(move)) {
                                 legalMoves.add(move);
                             }

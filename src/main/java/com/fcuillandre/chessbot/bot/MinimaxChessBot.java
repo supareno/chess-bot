@@ -80,6 +80,22 @@ public class MinimaxChessBot implements ChessBot {
         return value;
     }
 
+    private void applyMoveOnBoard(ChessBoard board, Move move) {
+        board.move(move);
+        // Handle promotion on board copies used for search
+        int endX = move.getEnd().getX();
+        int endY = move.getEnd().getY();
+        ChessPiece piece = board.getPieceAt(endX, endY);
+        if (piece != null && piece.getType() == ChessPieceType.PAWN) {
+            // White promotes at x==7, Black promotes at x==0
+            boolean promote = piece.getColor() == ChessColor.BLACK && endX == 0;
+            if (promote) {
+                ChessPieceType promoteTo = move.getPromotionPieceType() != null ? move.getPromotionPieceType() : ChessPieceType.QUEEN;
+                board.setPieceAt(endX, endY, new ChessPiece(piece.getColor(), promoteTo));
+            }
+        }
+    }
+
     private List<Move> generateLegalMovesForColor(ChessBoard board, ChessColor color, ChessGame gameCtx) {
         List<Move> legal = new ArrayList<>();
         for (int x = 0; x < 8; x++) {
@@ -91,7 +107,13 @@ public class MinimaxChessBot implements ChessBot {
                     for (int dx = 0; dx < 8; dx++) {
                         for (int dy = 0; dy < 8; dy++) {
                             if (x == dx && y == dy) continue;
-                            Move m = new Move(new Coordinate(x, y), new Coordinate(dx, dy));
+                            Move m;
+                            // If a pawn reaches last rank, include promotion in the generated move
+                            if (piece.getType() == ChessPieceType.PAWN && dx == 0) {
+                                m = new Move(new Coordinate(x, y), new Coordinate(dx, dy), ChessPieceType.QUEEN);
+                            } else {
+                                m = new Move(new Coordinate(x, y), new Coordinate(dx, dy));
+                            }
                             if (checker.isValidMove(piece, m, board, gameCtx)) {
                                 // Reject moves that leave own king in check
                                 ChessBoard tmp = copyBoard(board);
@@ -166,9 +188,6 @@ public class MinimaxChessBot implements ChessBot {
         return copy;
     }
 
-    private void applyMoveOnBoard(ChessBoard board, Move move) {
-        board.move(move);
-    }
 
     /**
      * Simple material evaluation from Black's perspective: positive means good for Black.
