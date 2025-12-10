@@ -1,7 +1,9 @@
 package com.fcuillandre.chessbot.ui;
 
 import com.fcuillandre.chessbot.bot.ChessBot;
-import com.fcuillandre.chessbot.bot.MinimaxChessBot;
+import com.fcuillandre.chessbot.bot.minimax.MinimaxChessBot;
+import com.fcuillandre.chessbot.bot.RandomChessBot;
+import com.fcuillandre.chessbot.bot.minimax.MinimaxPlusChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.game.Move;
@@ -35,6 +37,10 @@ public class ChessGameFrame extends JFrame {
             com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
             com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
     };
+    public static final String MINIMAX_PLUS = "minimax_plus";
+    public static final String MINIMAX = "minimax";
+    public static final String RANDOM = "random";
+
     @Getter
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     @Getter
@@ -60,6 +66,7 @@ public class ChessGameFrame extends JFrame {
     private JMenuItem frenchItem;
     private JRadioButtonMenuItem randomBotItem;
     private JRadioButtonMenuItem minimaxBotItem;
+    private JRadioButtonMenuItem minimaxPlusBotItem;
     private ButtonGroup botLevelGroup;
 
     /**
@@ -119,27 +126,43 @@ public class ChessGameFrame extends JFrame {
         languageMenu.add(englishItem);
         languageMenu.add(frenchItem);
         // Bot level menu
-        botLevelMenu = new JMenu(messages.getString("menu.bot_level"));
-        randomBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_random"));
-        minimaxBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_moderate"));
-        botLevelGroup = new ButtonGroup();
-        botLevelGroup.add(randomBotItem);
-        botLevelGroup.add(minimaxBotItem);
-        // Set initial selection
-        if (bot instanceof com.fcuillandre.chessbot.bot.RandomChessBot) {
-            randomBotItem.setSelected(true);
-        } else {
-            minimaxBotItem.setSelected(true);
-        }
-        randomBotItem.addActionListener(e -> onBotLevelChange("random"));
-        minimaxBotItem.addActionListener(e -> onBotLevelChange("minimax"));
-        botLevelMenu.add(randomBotItem);
-        botLevelMenu.add(minimaxBotItem);
+        botLevelMenu = createBotLevelMenu();
         menuBar.add(homeMenu);
         menuBar.add(botLevelMenu);
         menuBar.add(helpMenu);
         menuBar.add(languageMenu);
         return menuBar;
+    }
+
+    /**
+     * Creates the bot level menu and configures bot selection radio buttons.
+     * To add a new bot, add a new radio button and update the logic here.
+     */
+    private JMenu createBotLevelMenu() {
+        JMenu botMenu = new JMenu(messages.getString("menu.bot_level"));
+        randomBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_random"));
+        minimaxBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_moderate"));
+        minimaxPlusBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_moderate_plus"));
+        botLevelGroup = new ButtonGroup();
+        botLevelGroup.add(randomBotItem);
+        botLevelGroup.add(minimaxBotItem);
+        botLevelGroup.add(minimaxPlusBotItem);
+        // Set initial selection
+        if (bot instanceof com.fcuillandre.chessbot.bot.RandomChessBot) {
+            randomBotItem.setSelected(true);
+        } else if (bot instanceof MinimaxChessBot) {
+            minimaxBotItem.setSelected(true);
+        } else {
+            minimaxPlusBotItem.setSelected(true);
+        }
+
+        randomBotItem.addActionListener(e -> onBotLevelChange(RANDOM));
+        minimaxBotItem.addActionListener(e -> onBotLevelChange(MINIMAX));
+        minimaxPlusBotItem.addActionListener(e -> onBotLevelChange(MINIMAX_PLUS));
+        botMenu.add(randomBotItem);
+        botMenu.add(minimaxBotItem);
+        botMenu.add(minimaxPlusBotItem);
+        return botMenu;
     }
 
     private void switchLanguage(Locale locale) {
@@ -154,13 +177,21 @@ public class ChessGameFrame extends JFrame {
                 messages.getString("dialog.new_game_title"),
                 JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            if (level.equals("random")) {
-                bot = new com.fcuillandre.chessbot.bot.RandomChessBot();
-                randomBotItem.setSelected(true);
-            } else {
-                bot = new MinimaxChessBot();
-                minimaxBotItem.setSelected(true);
+            switch (level) {
+                case MINIMAX_PLUS:
+                    bot = new MinimaxPlusChessBot();
+                    minimaxPlusBotItem.setSelected(true);
+                    break;
+                case MINIMAX:
+                    bot = new MinimaxChessBot();
+                    minimaxBotItem.setSelected(true);
+                    break;
+                case RANDOM:
+                    bot = new RandomChessBot();
+                    randomBotItem.setSelected(true);
+                    break;
             }
+
             ChessGame newGame = new ChessGame();
             boardPanel.setMoveListener(null);
             getContentPane().remove(boardPanel);
@@ -282,7 +313,7 @@ public class ChessGameFrame extends JFrame {
             if (!game.isWhiteTurn()) {
                 new Thread(() -> {
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(1500);
                     } catch (InterruptedException ignored) {
                     }
                     if (gameOver) return;
