@@ -55,7 +55,7 @@ public class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
                 ChessUtils.log("-----");
                 return lastCompletedBestMove;
             }
-            if (result != null && result.move != null) {
+            if (result.move != null) {
                 bestMove = result.move;
                 lastCompletedBestMove = bestMove;
                 lastCompletedBestScore = result.score;
@@ -80,7 +80,8 @@ public class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
             if (System.currentTimeMillis() - startTime > timeLimitMillis) break;
             ChessBoard copy = copyBoard(board);
             applyMoveOnBoard(copy, m);
-            int score = minimax(copy, opposite(toMove), depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, game, startTime);
+            // Use negamax approach: negate the result from opponent's perspective
+            int score = -minimax(copy, opposite(toMove), depth - 1, Integer.MIN_VALUE, Integer.MAX_VALUE, game, startTime);
 
             ChessUtils.log(" - Move: " + m + " Score: " + score + " Depth: " + depth);
 
@@ -110,27 +111,33 @@ public class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
 
         if (System.currentTimeMillis() - startTime > timeLimitMillis) return Integer.MIN_VALUE;
         if (depth == 0) {
-            return quiescenceSearch(board, toMove, alpha, beta, gameCtx, startTime);
+            return evaluateBoardFromPerspective(board, toMove);
         }
+
         List<Move> moves = generateLegalMovesForColor(board, toMove, gameCtx);
         if (moves.isEmpty()) {
             boolean inCheck = isKingInCheckForColor(board, toMove, gameCtx);
             if (inCheck) {
-                return (toMove == ChessColor.BLACK) ? Integer.MIN_VALUE + 1 : Integer.MAX_VALUE - 1;
+                // Checkmate: very bad for current player, better if deeper (faster mate is worse)
+                return Integer.MIN_VALUE + depth;
             } else {
+                // Stalemate
                 return 0;
             }
         }
+
         int value = Integer.MIN_VALUE;
-        int originalAlpha = alpha; // store original alpha for flag assignment
+        int originalAlpha = alpha;
+
         for (Move move : moves) {
             if (System.currentTimeMillis() - startTime > timeLimitMillis) break;
             ChessBoard next = copyBoard(board);
             applyMoveOnBoard(next, move);
-            int score = minimax(next, opposite(toMove), depth - 1, alpha, beta, gameCtx, startTime);
+            // Negamax: negate the result from opponent's perspective
+            int score = -minimax(next, opposite(toMove), depth - 1, -beta, -alpha, gameCtx, startTime);
             value = Math.max(value, score);
             alpha = Math.max(alpha, value);
-            if (alpha >= beta) break;
+            if (alpha >= beta) break; // Beta cutoff
         }
 
         TranspositionTableEntry.Flag flag;
@@ -141,35 +148,15 @@ public class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
         } else {
             flag = TranspositionTableEntry.Flag.EXACT;
         }
+
         transpositionTable.put(hash, new TranspositionTableEntry(depth, value, flag));
 
         return value;
     }
 
-    private int quiescenceSearch(ChessBoard board, ChessColor toMove, int alpha, int beta, ChessGame gameCtx, long startTime) {
-        if (System.currentTimeMillis() - startTime > timeLimitMillis) return Integer.MIN_VALUE;
-
-        int standPat = evaluateBoard(board);
-        if (standPat >= beta) {
-            return beta;
-        }
-        if (alpha < standPat) {
-            alpha = standPat;
-        }
-
-        List<Move> captureMoves = generateCaptureMoves(board, toMove, gameCtx);
-        for (Move move : captureMoves) {
-            ChessBoard next = copyBoard(board);
-            applyMoveOnBoard(next, move);
-            int score = -quiescenceSearch(next, opposite(toMove), -beta, -alpha, gameCtx, startTime);
-            if (score >= beta) {
-                return beta;
-            }
-            if (score > alpha) {
-                alpha = score;
-            }
-        }
-        return alpha;
+    private int evaluateBoardFromPerspective(ChessBoard board, ChessColor perspective) {
+        int score = evaluateBoard(board); // This returns positive for BLACK, negative for WHITE
+        return (perspective == ChessColor.BLACK) ? score : -score;
     }
 
     private List<Move> generateCaptureMoves(ChessBoard board, ChessColor color, ChessGame gameCtx) {
