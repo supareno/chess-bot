@@ -16,6 +16,7 @@ This project is built by Frederic Cuillandre as a personal project to explore ch
 Bot modes are:
 - Random Move Bot: Selects moves randomly from available legal moves
 - Minimax Bot: Uses the Minimax algorithm with a basic evaluation function
+- Minimax with Alpha-Beta Pruning: An optimized version of Minimax for better performance
 
 ## Prerequisites
 

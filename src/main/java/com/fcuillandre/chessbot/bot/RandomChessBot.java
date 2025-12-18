@@ -15,27 +15,52 @@
  */
 package com.fcuillandre.chessbot.bot;
 
-import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.board.ChessBoard;
+import com.fcuillandre.chessbot.game.ChessGame;
+import com.fcuillandre.chessbot.game.Coordinate;
+import com.fcuillandre.chessbot.game.Move;
 import com.fcuillandre.chessbot.pieces.ChessColor;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
-import com.fcuillandre.chessbot.game.Move;
-import com.fcuillandre.chessbot.game.Coordinate;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class RandomChessBot implements ChessBot {
+/**
+ * Provides a chess bot that selects a random legal move for Black.
+ * <p>
+ * This bot iterates over all Black pieces on the board, generates all possible legal moves
+ * (including pawn promotion to queen when reaching the last rank), and selects one at random.
+ * <br>
+ * <b>Usage example:</b>
+ * <pre>
+ *     ChessBot bot = new RandomChessBot();
+ *     Move move = bot.getMove(game);
+ *     if (move != null) {
+ *         game.makeMove(move);
+ *     }
+ * </pre>
+ *
+ * @author fcuillandre
+ * @version 1.0
+ */
+public final class RandomChessBot implements ChessBot {
 
+    @Override
     public Move getMove(ChessGame game) {
         return getRandomLegalMove(game);
     }
 
     /**
      * Returns a random legal move for Black.
-     * @param game The current chess game
-     * @return A random legal move for Black, or null if none available
+     * <p>
+     * Iterates over all Black pieces, generates all legal moves (including pawn promotion),
+     * and selects one at random.
+     * </p>
+     *
+     * @param game the current chess game
+     * @return a random legal move for Black, or null if none available
      */
     public Move getRandomLegalMove(ChessGame game) {
         ChessBoard board = game.getBoard();
@@ -49,7 +74,7 @@ public class RandomChessBot implements ChessBot {
                         for (int dy = 0; dy < 8; dy++) {
                             if (x == dx && y == dy) continue;
                             Move move;
-                            // Handle black pawn promotion when reaching rank 8 (x == 0)
+                            // Promote black pawn to queen when reaching rank 8 (x == 0)
                             if (piece.getType() == ChessPieceType.PAWN && dx == 0) {
                                 move = new Move(new Coordinate(x, y), new Coordinate(dx, dy), ChessPieceType.QUEEN);
                             } else {

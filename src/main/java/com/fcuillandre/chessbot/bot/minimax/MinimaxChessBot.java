@@ -17,7 +17,7 @@ import java.util.List;
  * @author fcuillandre
  * @version 1.0
  */
-public class MinimaxChessBot extends AbstractMinimaxChessBot {
+public final class MinimaxChessBot extends AbstractMinimaxChessBot {
 
     /*
      * Depth is set to 4 plies (2 full moves).
@@ -27,6 +27,11 @@ public class MinimaxChessBot extends AbstractMinimaxChessBot {
 
     @Override
     public Move getMove(ChessGame game) {
+        // Use opening book if available
+        Move bookMove = SimpleOpeningBook.getBookMove(game);
+        if (bookMove != null) {
+            return bookMove;
+        }
         ChessColor toMove = ChessColor.BLACK;
         List<Move> legalMoves = generateLegalMovesUsingGame(game, toMove);
         if (legalMoves.isEmpty()) return null;

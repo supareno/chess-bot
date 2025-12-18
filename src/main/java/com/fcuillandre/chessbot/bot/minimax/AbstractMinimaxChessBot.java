@@ -13,6 +13,39 @@ import com.fcuillandre.chessbot.pieces.ChessPieceType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract base class for chess bots using the Minimax algorithm.
+ * <p>
+ * This class provides utility methods for move generation, board evaluation, and move application,
+ * including pawn promotion logic and king safety checks. Subclasses should implement
+ * the decision logic for selecting moves using Minimax or related algorithms.
+ * </p>
+ *
+ * <h2>Features</h2>
+ * <ul>
+ *   <li>Move generation for all pieces, including pawn promotion for black pawns.</li>
+ *   <li>Board evaluation based on material count.</li>
+ *   <li>King safety checks to filter illegal moves.</li>
+ *   <li>Piece-specific move validation using the strategy pattern.</li>
+ *   <li>Utility for copying board state and finding the king.</li>
+ * </ul>
+ *
+ * <h2>Usage Example</h2>
+ * <pre>
+ *   class MyMinimaxBot extends AbstractMinimaxChessBot {
+ *       // Implement move selection logic
+ *   }
+ * </pre>
+ *
+ * <h2>Thread Safety</h2>
+ * This class is not thread-safe; each bot instance should be used in a single thread.
+ *
+ * <h2>Extensibility</h2>
+ * Subclasses can override evaluation and move generation methods for custom logic.
+ *
+ * @author fcuillandre
+ * @version 1.0
+ */
 public abstract class AbstractMinimaxChessBot implements ChessBot {
 
     void applyMoveOnBoard(ChessBoard board, Move move) {

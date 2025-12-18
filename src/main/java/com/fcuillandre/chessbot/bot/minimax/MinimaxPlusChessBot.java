@@ -17,21 +17,14 @@ import java.util.List;
 
 /**
  * MinimaxPlusChessBot: Minimax with iterative deepening, transposition tables, and quiescence search.
+ *
+ * @author fcuillandre
+ * @version 1.0
  */
-public class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
+public final class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
 
     private final long timeLimitMillis = 10000; // 10 seconds per move max
     private final TranspositionTable transpositionTable = new TranspositionTable();
-
-    // Helper class to hold move and score
-    private static class MoveScore {
-        final Move move;
-        final int score;
-        MoveScore(Move move, int score) {
-            this.move = move;
-            this.score = score;
-        }
-    }
 
     @Override
     public Move getMove(ChessGame game) {
@@ -186,5 +179,16 @@ public class MinimaxPlusChessBot extends AbstractMinimaxChessBot {
             }
         }
         return captures;
+    }
+
+    // Helper class to hold move and score
+    private static class MoveScore {
+        final Move move;
+        final int score;
+
+        MoveScore(Move move, int score) {
+            this.move = move;
+            this.score = score;
+        }
     }
 }

@@ -6,11 +6,33 @@ import com.fcuillandre.chessbot.pieces.ChessPiece;
 
 import java.util.Random;
 
-public class ZobristHashing {
+/**
+ * Provides Zobrist hashing functionality for chess board positions.
+ * <p>
+ * Zobrist hashing is used to efficiently compute a unique hash for a given chess board state,
+ * which is useful for transposition tables and detecting repeated positions.
+ * </p>
+ * <p>
+ * This class is immutable and cannot be extended.
+ * </p>
+ *
+ * @author fcuillandre
+ * @version 1.0
+ */
+public final class ZobristHashing {
 
+    /**
+     * Zobrist keys for each square and piece type.
+     * zobristKeys[x][y][pieceIndex] gives the random value for a piece at (x, y).
+     */
     private static final long[][][] zobristKeys = new long[8][8][12];
+
+    /**
+     * Random number generator for initializing Zobrist keys.
+     */
     private static final Random random = new Random();
 
+    // Static initializer to fill zobristKeys with random values.
     static {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -21,6 +43,12 @@ public class ZobristHashing {
         }
     }
 
+    /**
+     * Computes the Zobrist hash for the given chess board.
+     *
+     * @param board the chess board to hash
+     * @return the Zobrist hash value representing the board state
+     */
     public static long computeHash(ChessBoard board) {
         long hash = 0;
         for (int i = 0; i < 8; i++) {
@@ -34,6 +62,17 @@ public class ZobristHashing {
         return hash;
     }
 
+    /**
+     * Returns the index for the given piece, used for Zobrist key lookup.
+     * <ul>
+     *     <li>White pieces: indices 6-11</li>
+     *     <li>Black pieces: indices 0-5</li>
+     *     <li>Order: PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING</li>
+     * </ul>
+     *
+     * @param piece the chess piece
+     * @return the index corresponding to the piece type and color
+     */
     private static int getPieceIndex(ChessPiece piece) {
         int index = 0;
         if (piece.getColor() == ChessColor.WHITE) {
@@ -62,4 +101,3 @@ public class ZobristHashing {
         return index;
     }
 }
-
