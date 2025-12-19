@@ -1,7 +1,5 @@
 package com.fcuillandre.chessbot.bot.zobrist;
 
-import com.fcuillandre.chessbot.utils.ChessUtils;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,7 +35,6 @@ public final class TranspositionTable {
      * @return the corresponding {@link TranspositionTableEntry}, or null if not present
      */
     public TranspositionTableEntry get(long key) {
-        ChessUtils.log("Zobrist table size: " + table.size());
         return table.get(key);
     }
 

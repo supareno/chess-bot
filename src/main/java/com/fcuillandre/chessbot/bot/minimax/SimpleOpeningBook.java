@@ -75,6 +75,8 @@ public final class SimpleOpeningBook {
         openingBook.put("E2E4 E7E5 B1C3", Arrays.asList("B8C6", "G8F6", "F1C4"));
         // Scottish Game: 1. e4 e5 2. Nf3 Nc6 3. d4
         openingBook.put("E2E4 E7E5 G1F3 B8C6 D2D4", Arrays.asList("E5D4", "F6E7", "D7D6"));
+        // Caro-Kann Defense: 1. e4 c6
+        openingBook.put("E2E4 C7C6 D2D4", Arrays.asList("D7D5"));
 
         // First opening:
         // 1. d4
