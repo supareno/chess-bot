@@ -1,13 +1,31 @@
+/*
+ * Copyright 2025-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.fcuillandre.chessbot.pieces;
+
+import lombok.NoArgsConstructor;
 
 /**
  * This class provides static instances of all chess pieces for both colors.
  * It includes pieces for white and black, such as rooks, knights, bishops, queens, kings, and pawns.
  * Each piece is represented by a `ChessPiece` object with its color and type.
  *
- * @author FCuillandre
- * @version 1.0
+ * @author fcuillandre
+ * @version 0.1
  */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class ChessPieces {
 
     public static final ChessPiece WHITE_ROOK = new ChessPiece(ChessColor.WHITE, ChessPieceType.ROOK);

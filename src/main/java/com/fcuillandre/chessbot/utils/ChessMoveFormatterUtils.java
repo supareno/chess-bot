@@ -1,9 +1,30 @@
+/*
+ * Copyright 2025-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.fcuillandre.chessbot.utils;
 
 import com.fcuillandre.chessbot.game.MovedPiece;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
 import lombok.NoArgsConstructor;
 
+/**
+ * Utility class for formatting chess moves in algebraic notation.
+ *
+ * @author fcuillandre
+ * @version 0.1
+ */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class ChessMoveFormatterUtils {
 
@@ -20,7 +41,6 @@ public final class ChessMoveFormatterUtils {
         StringBuilder notation = new StringBuilder();
         ChessPieceType type = move.getPiece().getType();
         char fileFrom = (char) ('a' + move.getStart().getY());
-        int rankFrom = move.getStart().getX() + 1;
         char fileTo = (char) ('a' + move.getEnd().getY());
         int rankTo = move.getEnd().getX() + 1;
         // Castling
@@ -30,19 +50,19 @@ public final class ChessMoveFormatterUtils {
         if (type != ChessPieceType.PAWN) {
             switch (type) {
                 case KING:
-                    notation.append("K");
+                    notation.append(ChessPieceType.KING.getShortName());
                     break;
                 case QUEEN:
-                    notation.append("Q");
+                    notation.append(ChessPieceType.QUEEN.getShortName());
                     break;
                 case ROOK:
-                    notation.append("R");
+                    notation.append(ChessPieceType.ROOK.getShortName());
                     break;
                 case BISHOP:
-                    notation.append("B");
+                    notation.append(ChessPieceType.BISHOP.getShortName());
                     break;
                 case KNIGHT:
-                    notation.append("N");
+                    notation.append(ChessPieceType.KNIGHT.getShortName());
                     break;
                 default:
                     break;
@@ -63,16 +83,16 @@ public final class ChessMoveFormatterUtils {
             notation.append("=");
             switch (move.getPromotionPieceType()) {
                 case QUEEN:
-                    notation.append("Q");
+                    notation.append(ChessPieceType.QUEEN.getShortName());
                     break;
                 case ROOK:
-                    notation.append("R");
+                    notation.append(ChessPieceType.ROOK.getShortName());
                     break;
                 case BISHOP:
-                    notation.append("B");
+                    notation.append(ChessPieceType.BISHOP.getShortName());
                     break;
                 case KNIGHT:
-                    notation.append("N");
+                    notation.append(ChessPieceType.KNIGHT.getShortName());
                     break;
                 default:
                     break;
