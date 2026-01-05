@@ -5,7 +5,7 @@
 
     <groupId>com.fcuillandre.chessbot</groupId>
     <artifactId>chess-bot</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>

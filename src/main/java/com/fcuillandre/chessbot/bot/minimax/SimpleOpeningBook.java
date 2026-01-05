@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.fcuillandre.chessbot.bot.minimax;
 
 import com.fcuillandre.chessbot.game.ChessGame;
@@ -34,7 +50,7 @@ import java.util.stream.Collectors;
  * To add new openings, add entries to the static block using the move history key and a list of book moves.
  *
  * @author fcuillandre
- * @version 1.0
+ * @version 0.1
  */
 public final class SimpleOpeningBook {
 
@@ -80,7 +96,7 @@ public final class SimpleOpeningBook {
 
         // First opening:
         // 1. d4
-        openingBook.put("D2D4", Arrays.asList("D7D5", "Nf6", "E7E6", "C7C5", "G8F6"));
+        openingBook.put("D2D4", Arrays.asList("D7D5", "E7E6", "C7C5", "G8F6"));
         // Queen's Gambit: 1. d4 d5 2. c4
         openingBook.put("D2D4 D7D5 C2C4", Arrays.asList("D5C4", "E7E6", "C7C6", "Nf6"));
         // King's Indian Defense: 1. d4 Nf
@@ -88,7 +104,7 @@ public final class SimpleOpeningBook {
         // Nimzo-Indian Defense: 1. d4 Nf6 2. c4 e6 3. Nc3
         openingBook.put("D2D4 G8F6 C2C4 E7E6 B1C3", Arrays.asList("F8B4"));
         // Nimzo-Indian Defense: 1. d4 Nf6 2. c4 e6 3. Nc3 Bb4
-        openingBook.put("D2D4 G8F6 C2C4 E7E6 B1C3 F8B4", Arrays.asList("O-O", "D7D5", "C7C5"));
+        openingBook.put("D2D4 G8F6 C2C4 E7E6 B1C3 F8B4", Arrays.asList( "D7D5", "C7C5"));
     }
 
 
