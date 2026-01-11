@@ -17,8 +17,8 @@
 package com.fcuillandre.chessbot.ui;
 
 import com.fcuillandre.chessbot.bot.ChessBot;
-import com.fcuillandre.chessbot.bot.minimax.MinimaxChessBot;
 import com.fcuillandre.chessbot.bot.RandomChessBot;
+import com.fcuillandre.chessbot.bot.minimax.MinimaxChessBot;
 import com.fcuillandre.chessbot.bot.minimax.MinimaxPlusChessBot;
 import com.fcuillandre.chessbot.game.ChessGame;
 import com.fcuillandre.chessbot.game.Coordinate;
@@ -36,6 +36,8 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import static com.fcuillandre.chessbot.ui.ChessAppFonts.*;
+
 /**
  * This class represents the main frame for the chess game UI.
  * It contains the chess board panel, a list of moves, and a label indicating whose turn it is.
@@ -46,22 +48,25 @@ import java.util.ResourceBundle;
  */
 public class ChessGameFrame extends JFrame {
 
-    public static final Font ARIAL_FONT_BOLD_18 = new Font("Arial", Font.BOLD, 18);
+
+    public static final String MINIMAX_PLUS = "minimax_plus";
+    public static final String MINIMAX = "minimax";
+    public static final String RANDOM = "random";
     private static final com.fcuillandre.chessbot.pieces.ChessPieceType[] PROMOTION_OPTIONS = {
             com.fcuillandre.chessbot.pieces.ChessPieceType.QUEEN,
             com.fcuillandre.chessbot.pieces.ChessPieceType.ROOK,
             com.fcuillandre.chessbot.pieces.ChessPieceType.BISHOP,
             com.fcuillandre.chessbot.pieces.ChessPieceType.KNIGHT
     };
-    public static final String MINIMAX_PLUS = "minimax_plus";
-    public static final String MINIMAX = "minimax";
-    public static final String RANDOM = "random";
-
+    public static final String RANDOM_LEVEL_STARS = "\u2605\u2606\u2606";
+    public static final String MINIMAX_LEVEL_STARS = "\u2605\u2605\u2606";
+    public static final String MINIMAX_PLUS_LEVEL_STARS = "\u2605\u2605\u2605";
     @Getter
     private final DefaultListModel<String> moveListModel = new DefaultListModel<>();
     @Getter
     private final JList<String> moveList = new JList<>(moveListModel);
     private final JLabel turnLabel = new JLabel();
+    private final JLabel botLevelLabel = new JLabel();
     private ChessBot bot = new MinimaxChessBot();
     private ChessBoardPanel boardPanel;
     private ChessGame game;
@@ -103,7 +108,7 @@ public class ChessGameFrame extends JFrame {
         boardPanel.setMinimumSize(new Dimension(600, 600));
         boardPanel.setMaximumSize(new Dimension(600, 600));
         add(boardPanel, BorderLayout.CENTER);
-        moveList.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        moveList.setFont(MONOSPACED_FONT_BOLD_14);
         moveList.setMinimumSize(new Dimension(180, 600));
 
         JScrollPane moveListScrollPane = new JScrollPane(moveList);
@@ -112,7 +117,11 @@ public class ChessGameFrame extends JFrame {
         moveListScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(moveListScrollPane, BorderLayout.EAST);
 
-        add(turnLabel, BorderLayout.NORTH);
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(turnLabel, BorderLayout.CENTER);
+        topPanel.add(botLevelLabel, BorderLayout.EAST);
+        add(topPanel, BorderLayout.NORTH);
+
         setSize(800, 600);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -145,8 +154,10 @@ public class ChessGameFrame extends JFrame {
         botLevelMenu = createBotLevelMenu();
         menuBar.add(homeMenu);
         menuBar.add(botLevelMenu);
-        menuBar.add(helpMenu);
         menuBar.add(languageMenu);
+        // add a bar menu separator between language and help menu
+        menuBar.add(Box.createHorizontalStrut(30));
+        menuBar.add(helpMenu);
         return menuBar;
     }
 
@@ -156,9 +167,9 @@ public class ChessGameFrame extends JFrame {
      */
     private JMenu createBotLevelMenu() {
         JMenu botMenu = new JMenu(messages.getString("menu.bot_level"));
-        randomBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_random"));
-        minimaxBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_moderate"));
-        minimaxPlusBotItem = new JRadioButtonMenuItem(messages.getString("menu.bot_moderate_plus"));
+        randomBotItem = new JRadioButtonMenuItem("");
+        minimaxBotItem = new JRadioButtonMenuItem("");
+        minimaxPlusBotItem = new JRadioButtonMenuItem("");
         botLevelGroup = new ButtonGroup();
         botLevelGroup.add(randomBotItem);
         botLevelGroup.add(minimaxBotItem);
@@ -179,6 +190,22 @@ public class ChessGameFrame extends JFrame {
         botMenu.add(minimaxBotItem);
         botMenu.add(minimaxPlusBotItem);
         return botMenu;
+    }
+
+    private void updateBotLevelLabel() {
+        String levelKey = "label.level";
+        String levelStars = "";
+        if (bot instanceof RandomChessBot) {
+            levelStars = RANDOM_LEVEL_STARS;
+        } else if (bot instanceof MinimaxChessBot) {
+            levelStars = MINIMAX_LEVEL_STARS;
+        } else if (bot instanceof MinimaxPlusChessBot) {
+            levelStars = MINIMAX_PLUS_LEVEL_STARS;
+        }
+        botLevelLabel.setText(messages.getString(levelKey) + ": " + levelStars);
+        botLevelLabel.setFont(SEGOE_FONT_BOLD_16);
+        botLevelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        botLevelLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
     }
 
     private void switchLanguage(Locale locale) {
@@ -225,6 +252,7 @@ public class ChessGameFrame extends JFrame {
             revalidate();
             repaint();
             updateTurnLabel();
+            updateBotLevelLabel();
         }
     }
 
@@ -239,8 +267,9 @@ public class ChessGameFrame extends JFrame {
         englishItem.setText(messages.getString("menu.language_english"));
         frenchItem.setText(messages.getString("menu.language_french"));
         botLevelMenu.setText(messages.getString("menu.bot_level"));
-        randomBotItem.setText(messages.getString("menu.bot_random"));
-        minimaxBotItem.setText(messages.getString("menu.bot_moderate"));
+        randomBotItem.setText(RANDOM_LEVEL_STARS + " " + messages.getString("menu.bot_random"));
+        minimaxBotItem.setText(MINIMAX_LEVEL_STARS + " " + messages.getString("menu.bot_moderate"));
+        minimaxPlusBotItem.setText(MINIMAX_PLUS_LEVEL_STARS + " " + messages.getString("menu.bot_moderate_plus"));
         // Update selection
         if (bot instanceof com.fcuillandre.chessbot.bot.RandomChessBot) {
             randomBotItem.setSelected(true);
@@ -248,6 +277,7 @@ public class ChessGameFrame extends JFrame {
             minimaxBotItem.setSelected(true);
         }
         updateTurnLabel();
+        updateBotLevelLabel();
         refreshMoveList();
     }
 
@@ -457,7 +487,7 @@ public class ChessGameFrame extends JFrame {
     }
 
     private void updateTurnLabel() {
-        this.updateTurnLabel(messages.getString("label.turn"));
+        this.updateTurnLabel("");//messages.getString("label.turn"));
     }
 
     private void updateTurnLabelWithCheck() {
@@ -476,7 +506,7 @@ public class ChessGameFrame extends JFrame {
         } else {
             this.turnLabel.setText(MessageFormat.format(turnLabel, messages.getString(game.isWhiteTurn() ? "piece.white" : "piece.black")));
         }
-        this.turnLabel.setFont(ARIAL_FONT_BOLD_18);
+        this.turnLabel.setFont(ARIAL_FONT_BOLD_16);
         this.turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
 

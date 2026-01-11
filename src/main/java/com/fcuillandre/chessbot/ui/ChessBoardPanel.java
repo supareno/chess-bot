@@ -27,6 +27,9 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 
+import static com.fcuillandre.chessbot.ui.ChessAppFonts.ARIAL_FONT_BOLD_12;
+import static com.fcuillandre.chessbot.ui.ChessAppFonts.SEGOE_FONT_BOLD_30;
+
 /**
  * ChessBoardPanel is a JPanel that displays a chess board with buttons for each square.
  * It allows users to click on squares to select pieces and make moves.
@@ -176,7 +179,7 @@ public final class ChessBoardPanel extends JPanel {
             // Number label (first column)
             if (y == 0) {
                 numberLabel = new JLabel(String.valueOf(x + 1), SwingConstants.LEFT);
-                numberLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                numberLabel.setFont(ARIAL_FONT_BOLD_12);
                 add(numberLabel, BorderLayout.WEST);
             } else {
                 numberLabel = null;
@@ -184,14 +187,14 @@ public final class ChessBoardPanel extends JPanel {
             // Letter label (first row)
             if (x == 0) {
                 letterLabel = new JLabel(String.valueOf((char) ('A' + y)), SwingConstants.CENTER);
-                letterLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                letterLabel.setFont(ARIAL_FONT_BOLD_12);
                 add(letterLabel, BorderLayout.SOUTH);
             } else {
                 letterLabel = null;
             }
             // Piece label (center)
             pieceLabel = new JLabel("", SwingConstants.CENTER);
-            pieceLabel.setFont(new Font("Segoe UI Symbol", Font.BOLD, 30));
+            pieceLabel.setFont(SEGOE_FONT_BOLD_30);
             add(pieceLabel, BorderLayout.CENTER);
             // Mouse click
             addMouseListener(new java.awt.event.MouseAdapter() {
