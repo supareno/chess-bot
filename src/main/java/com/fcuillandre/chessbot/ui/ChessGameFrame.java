@@ -366,7 +366,15 @@ public class ChessGameFrame extends JFrame {
                     Move botMove = bot.getMove(game);
                     if (botMove != null) {
                         SwingUtilities.invokeLater(() -> {
-                            game.makeMove(botMove);
+                            if (!game.makeMove(botMove)) {
+                                // This should not happen but just in case, the bot should retry to play a move
+                                displayMessage(this,
+                                        messages.getString("dialog.bot_invalid_move"),
+                                        messages.getString("dialog.invalid_move_title"),
+                                        JOptionPane.ERROR_MESSAGE);
+
+                                return;
+                            }
 
                             if (game.isCheckmate()) {
                                 lastMovedPiece.setCheckmate(true);

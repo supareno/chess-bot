@@ -146,8 +146,9 @@ public final class ChessGame {
      * <p>This method checks if the move is valid, updates the board, and handles special cases like en passant and castling.</p>
      *
      * @param move The move to be made
+     * @return true if the move was made successfully, false otherwise
      */
-    public void makeMove(Move move) {
+    public boolean makeMove(Move move) {
         int startX = move.getStart().getX();
         int startY = move.getStart().getY();
         int endX = move.getEnd().getX();
@@ -216,8 +217,10 @@ public final class ChessGame {
             whiteTurn = !whiteTurn; // Switch turn
 
             moveHistory.add(movedPiece);
+            return true;
         } else {
             ChessUtils.log("Argh, move " + board.getCaseAt(startX, startY) + " " + board.getCaseAt(endX, endY) + " is NOT a valid move");
+            return false;
         }
     }
 
