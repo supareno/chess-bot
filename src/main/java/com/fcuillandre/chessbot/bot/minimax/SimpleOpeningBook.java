@@ -75,7 +75,7 @@ public final class SimpleOpeningBook {
         openingBook.put("E2E4 E7E5 G1F3 B8C6 F1B5 A7A6 B5C6", Arrays.asList("D7C6", "B7C6"));
         // Sicilian Defense
         //  1. e4 c5
-        openingBook.put("E2E4 C7C5 D2D4", Arrays.asList("G1F3", "D2D4", "C2C3", "B1C3"));
+        openingBook.put("E2E4 C7C5 D2D4", Arrays.asList("D7D5", "C7D5", "E7E6", "G8F6"));
         //  1. e4 c5 2. Nf3
         openingBook.put("E2E4 C7C5 G1F3", Arrays.asList("D7D6", "E7E6", "B8C6", "G8F6"));
 
