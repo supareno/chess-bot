@@ -66,27 +66,25 @@ public final class SimpleOpeningBook {
         // 1. e4
         openingBook.put("E2E4", Arrays.asList("E7E5", "C7C5", "E7E6", "C7C6", "D7D6", "D7D5"));
         // 1. e4 e5 2. Nf3
-        openingBook.put("E2E4 E7E5 G1F3", Arrays.asList("B8C6", "D7D6", "G8F6", "D7D5", "G7G6", "E7E6"));
+        openingBook.put("E2E4 E7E5 G1F3", Arrays.asList("B8C6", "D7D6", "G8F6", "D7D5", "G7G6"));
         // Italian Game: e4 e5 2. Nf3 Nc6 3. Bc4
         openingBook.put("E2E4 E7E5 G1F3 B8C6 F1C4", Arrays.asList("F8C5", "G8F6", "F8E7", "D7D6"));
+        // Ruy Lopez: 1. e4 e5 2. Nf3 Nc6 3. Bb5
+        openingBook.put("E2E4 E7E5 G1F3 B8C6 F1B5", Arrays.asList("A7A6", "G8F6", "F8C5", "F8E7"));
+        // Ruy Lopez exchange variation: 1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6
+        openingBook.put("E2E4 E7E5 G1F3 B8C6 F1B5 A7A6 B5C6", Arrays.asList("D7C6", "B7C6"));
         // Sicilian Defense
         //  1. e4 c5
-        openingBook.put("E2E4 C7C5", Arrays.asList("G1F3", "D2D4", "C2C3", "B1C3"));
+        openingBook.put("E2E4 C7C5 D2D4", Arrays.asList("D7D5", "C7D5", "E7E6", "G8F6"));
         //  1. e4 c5 2. Nf3
         openingBook.put("E2E4 C7C5 G1F3", Arrays.asList("D7D6", "E7E6", "B8C6", "G8F6"));
 
         // French Defense
-        //  1. e4 e6
-        openingBook.put("E2E4 E7E6", Arrays.asList("D2D4", "G1F3", "B1C3"));
         //  1. e4 e6 2. d4
         openingBook.put("E2E4 E7E6 D2D4", Arrays.asList("D7D5"));
         //  1. e4 e6 2. d4 d5
         openingBook.put("E2E4 E7E6 D2D4 D7D5 B1C3", Arrays.asList("G8F6"));
 
-        // Ruy Lopez: 1. e4 e5 2. Nf3 Nc6 3. Bb5
-        openingBook.put("E2E4 E7E5 G1F3 B8C6 F1B5", Arrays.asList("A7A6", "G8F6", "F8C5", "F8E7"));
-        // Scandinavian Defense: 1. e4 d5
-        openingBook.put("E2E4 D7D5", Arrays.asList("E4D5", "E7E6", "G1F3"));
         // Vienna Game: 1. e4 e5 2. Nc3
         openingBook.put("E2E4 E7E5 B1C3", Arrays.asList("B8C6", "G8F6", "F1C4"));
         // Scottish Game: 1. e4 e5 2. Nf3 Nc6 3. d4
@@ -98,13 +96,9 @@ public final class SimpleOpeningBook {
         // 1. d4
         openingBook.put("D2D4", Arrays.asList("D7D5", "E7E6", "C7C5", "G8F6"));
         // Queen's Gambit: 1. d4 d5 2. c4
-        openingBook.put("D2D4 D7D5 C2C4", Arrays.asList("D5C4", "E7E6", "C7C6", "Nf6"));
-        // King's Indian Defense: 1. d4 Nf
-        openingBook.put("D2D4 G8F6", Arrays.asList("G7G6", "E7E6", "D7D5"));
+        openingBook.put("D2D4 D7D5 C2C4", Arrays.asList("D5C4", "E7E6", "C7C6"));
         // Nimzo-Indian Defense: 1. d4 Nf6 2. c4 e6 3. Nc3
         openingBook.put("D2D4 G8F6 C2C4 E7E6 B1C3", Arrays.asList("F8B4"));
-        // Nimzo-Indian Defense: 1. d4 Nf6 2. c4 e6 3. Nc3 Bb4
-        openingBook.put("D2D4 G8F6 C2C4 E7E6 B1C3 F8B4", Arrays.asList( "D7D5", "C7C5"));
     }
 
 
