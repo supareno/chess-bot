@@ -28,6 +28,7 @@ import com.fcuillandre.chessbot.pieces.ChessColor;
 import com.fcuillandre.chessbot.pieces.ChessPiece;
 import com.fcuillandre.chessbot.pieces.ChessPieceType;
 import com.fcuillandre.chessbot.utils.ChessMoveFormatterUtils;
+import com.fcuillandre.chessbot.utils.ChessUtils;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -398,6 +399,16 @@ public class ChessGameFrame extends JFrame {
                                         JOptionPane.INFORMATION_MESSAGE);
                                 return;
                             }
+                            // add here promotion for back pawn if possible
+                            int endX = botMove.getEnd().getX();
+                            int endY = botMove.getEnd().getY();
+                            ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
+                            if (promotedPawn.getColor() == ChessColor.BLACK && endX == 0) {
+                                int idx = (int) (Math.random() * PROMOTION_OPTIONS.length);
+                                game.promotePawn(new Coordinate(endX, endY), PROMOTION_OPTIONS[idx], ChessColor.BLACK);
+
+                                ChessUtils.log("Promoting bot pawn at " + endX + "," + endY + " to " + PROMOTION_OPTIONS[idx]);
+                            }
                             refreshAll();
                         });
                     }
@@ -417,43 +428,35 @@ public class ChessGameFrame extends JFrame {
             }
         }
         Move lastMove = new Move(game.getLastMove().getStart(), game.getLastMove().getEnd());
-        if (lastMove != null) {
-            MovedPiece lastMovedPiece = game.getLastMove();
 
-            int endX = lastMove.getEnd().getX();
-            int endY = lastMove.getEnd().getY();
-            ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
-            if (promotedPawn != null && promotedPawn.getType() == ChessPieceType.PAWN) {
-                if (promotedPawn.getColor() == ChessColor.WHITE && endX == 7) {
-                    String[] optionNames = {
-                            messages.getString("piece.queen"),
-                            messages.getString("piece.rook"),
-                            messages.getString("piece.bishop"),
-                            messages.getString("piece.knight")
-                    };
-                    int choice = JOptionPane.showOptionDialog(this,
-                            messages.getString("dialog.pawn_promotion"),
-                            messages.getString("dialog.pawn_promotion_title"),
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            optionNames,
-                            optionNames[0]);
-                    if (choice >= 0 && choice < PROMOTION_OPTIONS.length) {
-                        game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), PROMOTION_OPTIONS[choice]);
-                        //refresh();
-                        lastMovedPiece.setPromotionPieceType(PROMOTION_OPTIONS[choice]);
-                    }
-                } else if (promotedPawn.getColor() == com.fcuillandre.chessbot.pieces.ChessColor.BLACK && endX == 0) {
-                    int idx = (int) (Math.random() * PROMOTION_OPTIONS.length);
-                    game.promotePawn(new com.fcuillandre.chessbot.game.Coordinate(endX, endY), PROMOTION_OPTIONS[idx]);
-                    //refresh();
-                    lastMovedPiece.setPromotionPieceType(PROMOTION_OPTIONS[idx]);
+        MovedPiece lastMovedPiece = game.getLastMove();
+
+        int endX = lastMove.getEnd().getX();
+        int endY = lastMove.getEnd().getY();
+        ChessPiece promotedPawn = game.getBoard().getPieceAt(endX, endY);
+        if (promotedPawn != null && promotedPawn.getType() == ChessPieceType.PAWN) {
+            if (promotedPawn.getColor() == ChessColor.WHITE && endX == 7) {
+                String[] optionNames = {
+                        messages.getString("piece.queen"),
+                        messages.getString("piece.rook"),
+                        messages.getString("piece.bishop"),
+                        messages.getString("piece.knight")
+                };
+                int choice = JOptionPane.showOptionDialog(this,
+                        messages.getString("dialog.pawn_promotion"),
+                        messages.getString("dialog.pawn_promotion_title"),
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        optionNames,
+                        optionNames[0]);
+                if (choice >= 0 && choice < PROMOTION_OPTIONS.length) {
+                    game.promotePawn(new Coordinate(endX, endY), PROMOTION_OPTIONS[choice], ChessColor.WHITE);
+                    //lastMovedPiece.setPromotionPieceType(PROMOTION_OPTIONS[choice]);
                 }
             }
         }
         // Update move list and turn label
-
         refreshAll();
     }
 
