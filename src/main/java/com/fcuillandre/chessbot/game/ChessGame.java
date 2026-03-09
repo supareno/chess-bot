@@ -162,21 +162,8 @@ public final class ChessGame {
             boolean isCastling = isKing && Math.abs(endY - startY) == 2 && startX == endX;
 
             this.board.move(move);
-
-            // Auto-promotion if a pawn reaches last rank and promotion type is provided or default to QUEEN
-            ChessPiece justMoved = this.board.getPieceAt(endX, endY);
-            if (justMoved != null && justMoved.getType() == ChessPieceType.PAWN) {
-                boolean reachedLastRank = (justMoved.getColor() == ChessColor.WHITE && endX == 7)
-                        || (justMoved.getColor() == ChessColor.BLACK && endX == 0);
-                if (reachedLastRank) {
-                    ChessPieceType promoteTo = move.getPromotionPieceType() != null ? move.getPromotionPieceType() : ChessPieceType.QUEEN;
-                    this.board.setPieceAt(endX, endY, new ChessPiece(justMoved.getColor(), promoteTo));
-                }
-            }
-
             MovedPiece movedPiece = this.getMovedPiece(move, capturedPiece);
 
-            //addMoveToHistory(move, capturedPiece); // problem here: check is not updated correctly in the move list
             if (enPassant) {
                 int endXLast = this.lastMove.getEnd().getX();
                 int endYLast = this.lastMove.getEnd().getY();
@@ -281,7 +268,7 @@ public final class ChessGame {
                 isCastleQueenSide = true;
             }
         }
-        MovedPiece movedPiece = new MovedPiece(
+        return new MovedPiece(
                 piece,
                 move.getStart(),
                 move.getEnd(),
@@ -293,7 +280,6 @@ public final class ChessGame {
                 isEnPassant,
                 promotionPieceType
         );
-        return movedPiece;
     }
 
     /**
@@ -458,7 +444,7 @@ public final class ChessGame {
      * @param coord   The coordinate of the pawn to promote.
      * @param newType The type to promote to (must not be KING or PAWN).
      */
-    public void promotePawn(Coordinate coord, ChessPieceType newType) {
+    public void promotePawn(Coordinate coord, ChessPieceType newType, ChessColor color) {
         ChessPiece pawn = board.getPieceAt(coord.getX(), coord.getY());
         if (pawn == null || pawn.getType() != ChessPieceType.PAWN) {
             return;
@@ -468,16 +454,16 @@ public final class ChessGame {
         }
         board.setPieceAt(coord.getX(), coord.getY(), new ChessPiece(pawn.getColor(), newType));
         // get the last moved piece and update its promotion type
-        MovedPiece movedPiece = getLastWhiteMove();
+        MovedPiece movedPiece = getLastWhiteMove(color);
         if (movedPiece != null) {
             movedPiece.setPromotionPieceType(newType);
         }
     }
 
-    private MovedPiece getLastWhiteMove() {
+    private MovedPiece getLastWhiteMove(ChessColor color) {
         for (int i = moveHistory.size() - 1; i >= 0; i--) {
             MovedPiece mp = moveHistory.get(i);
-            if (mp.getPiece().getColor() == ChessColor.WHITE) {
+            if (mp.getPiece().getColor() == color) {
                 return mp;
             }
         }
