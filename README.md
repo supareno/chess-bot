@@ -1,93 +1,83 @@
-# Chess Bot
+# Java Swing Chess Game
 
-A Java-based chess bot featuring a graphical user interface (GUI) and basic AI. Play chess against the computer, with 
-support for standard chess rules.
-This project is built by Frederic Cuillandre as a personal project to explore chess game development with AI in Java.
-
+A Java-based chess bot featuring a graphical user interface (GUI) and basic AI. Play chess against the computer, with support for standard chess rules. This project is built by Frederic Cuillandre as a personal project to explore chess game development with AI in Java.
 ## Features
 
-- Play chess against a bot opponent
-- Java Swing GUI for interactive play
-- Standard chess rules implemented (Castling kingside and queenside, En passant, ...)
-- Move history displayed in algebraic notation
-- Playing against different levels of AI difficulty
-- Move validation per piece type
-
-Bot modes are:
-- Random Move Bot: Selects moves randomly from available legal moves
-- Minimax Bot: Uses the Minimax algorithm with a basic evaluation function
-- Minimax with Alpha-Beta Pruning: An optimized version of Minimax for better performance
+- **Intuitive graphical interface** with interactive chessboard
+- **Intelligent bot** using Minimax algorithm with alpha-beta pruning
+- **4 difficulty levels** (Easy, Medium, Hard, Expert)
+- **Color choice** to play against the bot
+- **Two-player mode** on the same screen
+- **All chess rules**: castling, en passant capture, promotion
+- **Automatic detection** of check, checkmate, stalemate
+- **Move history** in algebraic notation
+- **Legal move highlighting**
 
 ## Prerequisites
 
-- Java Development Kit (JDK) 17 or higher
+- Java JDK 17 or higher
 - Maven 3.6 or higher
 
-## Architecture
+## Compilation and Execution
 
-The project follows a layered architecture:
+Compilation is done with Maven
 
-| Layer        | Description                                      | Key Classes/Packages                  |
-|--------------|--------------------------------------------------|---------------------------------------|
-| Model        | Core game logic, board, pieces, rules            | `ChessBoard`, `ChessPiece`, `Move`    |
-| View         | Swing GUI components                             | `ChessGameFrame`, `ChessBoardPanel`   |
-| Controller   | Game state, move validation, turn management     | `ChessGame`                          |
-| AI           | Bot move selection logic                         | `ChessBot`                           |
-| Utilities    | Helpers, logging, move formatting                | `ChessUtils`, `ChessMoveFormatterUtils`|
+```bash
+# Compile the project
+mvn compile
 
-See the [Architecture Overview](assets/architecture.md) for detailed diagrams.
+# Run the game
+mvn exec:java -Dexec.mainClass="com.fcuillandre.chessbot.ChessApp"
+
+# Create executable JAR
+mvn package
+java -jar target/chess-bot-1.0-SNAPSHOT.jar
+```
 
 ## Project Structure
 
 ```
-com.fcuillandre.chessbot/
-├── board/          # Board representation and case enumeration
-├── bot/            # AI implementation
-├── game/           # Core game logic and move management
-│   └── checkers/   # Move validation strategies per piece type
-├── pieces/         # Piece definitions, types, and colors
-├── ui/             # Swing GUI components
-└── utils/          # Helper utilities and formatters
+src/main/java/com/fcuillandre/chessbot/
+├── ChessApp.java             # Entry point
+├── model/                    # Data model
+├── engine/                   # Game engine
+├── gui/                      # Graphical interface
+└── bot/                      # Artificial intelligence
+└── utils/                    # Utils
 ```
 
-## Setup Instructions
+## How to Play
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   ```
-2. Navigate to the project directory:
-   ```
-   cd chess-bot
-   ```
-3. Build the project using Maven:
-   ```
-   mvn clean install
-   ```
-4. Run the tests using Maven:
-   ```
-   mvn clean test
-   ```
+1. Launch the application
+2. Choose the game mode (against bot or two players)
+3. If playing against the bot:
+   - Select your color (White or Black)
+   - Choose difficulty level
+4. Click on a piece to see its possible moves
+5. Click on a highlighted square to move the piece
 
-## Usage
+## Shortcuts
 
-To run the chess bot GUI, execute:
-```
-mvn exec:java -Dexec.mainClass="com.fcuillandre.chessbot.ChessApp"
-```
+- **New Game**: Button in left panel
+- **Resign**: Button in left panel
+- **Flip Board**: Button in left panel
 
-## Screenshots
+## Bot Difficulty Levels
 
-<!-- Add screenshots of the GUI here -->
+| Level      | Depth | Description |
+|------------|-------|-------------|
+| Easy       | 2     | For beginners |
+| Medium     | 3     | Casual player |
+| Hard       | 4     | Experienced player |
+| Expert     | 5     | Serious challenge |
 
-## Testing
+## Technologies Used
 
-- Unit tests are provided for all major game logic components
-- Run tests with:
-  ```
-  mvn test
-  ```
-- Test coverage includes move validation, special rules, and edge cases
+- **Java 17** - Programming language
+- **Swing** - Graphical interface
+- **Minimax** - Search algorithm for bot
+- **Alpha-Beta Pruning** - Search optimization
+- **Piece-Square Tables** - Positional evaluation
 
 ## Contributing
 
