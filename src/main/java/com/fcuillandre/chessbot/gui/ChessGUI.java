@@ -23,6 +23,7 @@ import com.fcuillandre.chessbot.model.ChessBoard;
 import com.fcuillandre.chessbot.model.ChessColor;
 import com.fcuillandre.chessbot.model.ChessPieceType;
 import com.fcuillandre.chessbot.model.Move;
+import com.fcuillandre.chessbot.utils.ChessAppUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,6 +60,9 @@ public class ChessGUI extends JFrame implements GameListener {
     private ChessColor playerColor;
     private boolean isVsBot;
 
+    /**
+     * Constructs the main Chess GUI window, initializes components, and sets up event listeners.
+     */
     public ChessGUI() {
         super(Messages.get("app.title"));
 
@@ -233,6 +237,8 @@ public class ChessGUI extends JFrame implements GameListener {
 
     /**
      * Asks the player which piece to promote to.
+     *
+     * @return the chosen ChessPieceType for promotion
      */
     public ChessPieceType askForPromotion() {
         String[] options = {"Queen \u2655", "Rook \u2656", "Bishop \u2657", "Knight \u2658"};
@@ -284,7 +290,7 @@ public class ChessGUI extends JFrame implements GameListener {
                         gameEngine.makeMove(botMove);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ChessAppUtils.log(e.getMessage());
                 } finally {
                     boardPanel.setEnabled(true);
                     setCursor(Cursor.getDefaultCursor());

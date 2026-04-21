@@ -15,7 +15,10 @@
  */
 package com.fcuillandre.chessbot.bot;
 
-import com.fcuillandre.chessbot.model.*;
+import com.fcuillandre.chessbot.model.ChessBoard;
+import com.fcuillandre.chessbot.model.ChessColor;
+import com.fcuillandre.chessbot.model.ChessPiece;
+import com.fcuillandre.chessbot.model.ChessPieceType;
 
 /**
  * Position evaluator for the chess bot.
@@ -109,6 +112,8 @@ public final class PositionEvaluator {
     /**
      * Evaluates a position from the perspective of a color.
      *
+     * @param board       The chess board to evaluate
+     * @param perspective The color for which to evaluate the position
      * @return Positive score if the position is favorable, negative otherwise
      */
     public int evaluate(ChessBoard board, ChessColor perspective) {

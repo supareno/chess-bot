@@ -74,6 +74,7 @@ public final class GameEngine {
     /**
      * Attempts to make a move.
      *
+     * @param move The move to be made.
      * @return true if the move was executed successfully
      */
     public boolean makeMove(Move move) {
@@ -121,6 +122,10 @@ public final class GameEngine {
 
     /**
      * Makes a move from start and end positions.
+     *
+     * @param from The starting position of the piece to move.
+     * @param to   The target position to move the piece to.
+     * @return true if the move was executed successfully, false otherwise (e.g., illegal move, wrong turn, game over).
      */
     public boolean makeMove(ChessCaseEnumeration from, ChessCaseEnumeration to) {
         return makeMove(from.getPosition(), to.getPosition(), null);
@@ -128,6 +133,13 @@ public final class GameEngine {
 
     /**
      * Makes a move with possible promotion.
+     *
+     * @param from          The starting position of the piece to move.
+     * @param to            The target position to move the piece to.
+     * @param promotionType The type of piece to promote to if this move is a pawn promotion (e.g., QUEEN, ROOK, BISHOP,
+     *                      KNIGHT). Can be null if not a promotion move.
+     * @return {@code true} if the move was executed successfully, {@code false} otherwise (e.g., illegal move, wrong
+     * turn, game over).
      */
     public boolean makeMove(Position from, Position to, ChessPieceType promotionType) {
         List<Move> legalMoves = getLegalMovesFrom(from);
@@ -186,6 +198,8 @@ public final class GameEngine {
     /**
      * Checks if there is insufficient material to checkmate.
      * Covers: K-K, K+minor-K, and K+B vs K+B with bishops on the same square color.
+     *
+     * @return {@code true} if the position is a draw due to insufficient material, {@code false} otherwise.
      */
     private boolean isInsufficientMaterial() {
         int whiteBishops = 0, whiteKnights = 0;
@@ -214,7 +228,8 @@ public final class GameEngine {
                             if (piece.getColor() == ChessColor.WHITE) whiteKnights++;
                             else blackKnights++;
                         }
-                        case KING -> { } // Ignore kings
+                        case KING -> {
+                        } // Ignore kings
                     }
                 }
             }
@@ -243,6 +258,9 @@ public final class GameEngine {
 
     /**
      * Gets all legal moves from a position.
+     *
+     * @param from The position to get legal moves from.
+     * @return A list of legal moves that can be made from the given position.
      */
     public List<Move> getLegalMovesFrom(Position from) {
         ChessPiece piece = board.getPieceAt(from);
@@ -264,6 +282,8 @@ public final class GameEngine {
 
     /**
      * Gets all legal moves for the current player.
+     *
+     * @return A list of all legal moves available to the current player.
      */
     public List<Move> getAllLegalMoves() {
         return board.getAllLegalMoves(currentPlayer);
@@ -277,6 +297,11 @@ public final class GameEngine {
         notifyGameStateChanged();
     }
 
+    /**
+     * Gets the move history of the game.
+     *
+     * @return A list of moves that have been made in the game, in the order they were made.
+     */
     public List<Move> getMoveHistory() {
         return new ArrayList<>(moveHistory);
     }
@@ -308,11 +333,20 @@ public final class GameEngine {
         return null;
     }
 
-    // Listener management
+    /**
+     * Adds a listener to receive game events.
+     *
+     * @param listener The listener to add.
+     */
     public void addGameListener(GameListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Removes a listener from receiving game events.
+     *
+     * @param listener The listener to remove.
+     */
     public void removeGameListener(GameListener listener) {
         listeners.remove(listener);
     }

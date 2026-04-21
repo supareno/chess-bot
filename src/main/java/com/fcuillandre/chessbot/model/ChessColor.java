@@ -26,37 +26,47 @@ public enum ChessColor {
 
     WHITE,
     BLACK;
-    
+
     /**
      * Returns the opposite color.
+     *
+     * @return the opposite color (BLACK for WHITE, WHITE for BLACK)
      */
     public ChessColor opposite() {
         return this == WHITE ? BLACK : WHITE;
     }
-    
+
     /**
      * Returns the pawn movement direction (1 for white moving up, -1 for black moving down).
+     *
+     * @return the pawn movement direction
      */
     public int getPawnDirection() {
         return this == WHITE ? -1 : 1;
     }
-    
+
     /**
      * Returns the starting row of pawns.
+     *
+     * @return the starting row of pawns (6 for white, 1 for black)
      */
     public int getPawnStartRow() {
         return this == WHITE ? 6 : 1;
     }
-    
+
     /**
      * Returns the promotion row of pawns.
+     *
+     * @return the promotion row of pawns (0 for white, 7 for black)
      */
     public int getPromotionRow() {
         return this == WHITE ? 0 : 7;
     }
-    
+
     /**
      * Returns the starting row of the king (for castling).
+     *
+     * @return the starting row of the king (7 for white, 0 for black)
      */
     public int getBackRank() {
         return this == WHITE ? 7 : 0;

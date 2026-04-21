@@ -258,6 +258,9 @@ public final class ChessBoard {
 
     /**
      * Checks if a move is legal (does not leave the king in check).
+     *
+     * @param move the move to check
+     * @return true if the move is legal, false otherwise
      */
     public boolean isMoveLegal(Move move) {
         // Simulate the move
@@ -270,6 +273,8 @@ public final class ChessBoard {
 
     /**
      * Executes a move on the chessboard.
+     *
+     * @param move the move to execute
      */
     public void executeMove(Move move) {
         Position from = move.getFrom();
@@ -326,6 +331,8 @@ public final class ChessBoard {
 
     /**
      * Creates a deep copy of the chessboard.
+     *
+     * @return a new ChessBoard instance with the same piece positions and en passant target
      */
     public ChessBoard copy() {
         ChessBoard copy = new ChessBoard();
@@ -364,9 +371,6 @@ public final class ChessBoard {
         return sb.toString();
     }
 
-    /**
-     * Displays the chessboard in console (for debugging).
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

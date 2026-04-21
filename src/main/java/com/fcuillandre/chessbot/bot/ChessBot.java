@@ -27,7 +27,8 @@ import java.util.List;
  * ChessBot class implementing a simple Minimax algorithm with alpha-beta pruning to find the best move for the bot.
  *
  * @author fcuillandre
- * @since 1.0
+ * @version 1.0
+ * @since 0.1
  */
 public class ChessBot {
 
@@ -36,6 +37,12 @@ public class ChessBot {
     private final int maxDepth;
     private final PositionEvaluator evaluator;
 
+    /**
+     * Constructor for ChessBot.
+     *
+     * @param color The color the bot will play as (WHITE or BLACK).
+     * @param depth The maximum depth for the Minimax search (e.g., 3 or 4). Higher values will result in stronger play but slower move calculation.
+     */
     public ChessBot(ChessColor color, int depth) {
         this.color = color;
         this.maxDepth = depth;

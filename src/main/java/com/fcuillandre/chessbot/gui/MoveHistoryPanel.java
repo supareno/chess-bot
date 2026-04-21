@@ -15,13 +15,13 @@
  */
 package com.fcuillandre.chessbot.gui;
 
-import com.fcuillandre.chessbot.model.ChessBoard;
-import com.fcuillandre.chessbot.model.ChessColor;
-import com.fcuillandre.chessbot.model.Move;
-import com.fcuillandre.chessbot.model.ChessPieceType;
 import com.fcuillandre.chessbot.engine.GameEngine;
 import com.fcuillandre.chessbot.engine.GameListener;
 import com.fcuillandre.chessbot.engine.GameState;
+import com.fcuillandre.chessbot.model.ChessBoard;
+import com.fcuillandre.chessbot.model.ChessColor;
+import com.fcuillandre.chessbot.model.ChessPieceType;
+import com.fcuillandre.chessbot.model.Move;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +30,7 @@ import java.awt.*;
  * Panel displaying move history.
  *
  * @author fcuillandre
- * @since 0.1
+ * @since 1.0
  */
 public class MoveHistoryPanel extends JPanel implements GameListener {
 
@@ -39,6 +39,11 @@ public class MoveHistoryPanel extends JPanel implements GameListener {
     private final GameEngine gameEngine;
     private int moveNumber;
 
+    /**
+     * Creates the move history panel and registers it as a listener to the game engine.
+     *
+     * @param gameEngine the game engine to listen to
+     */
     public MoveHistoryPanel(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         this.moveNumber = 1;
@@ -64,12 +69,17 @@ public class MoveHistoryPanel extends JPanel implements GameListener {
         gameEngine.addGameListener(this);
     }
 
+    /**
+     * Clears the move history.
+     */
     public void clear() {
         historyArea.setText("");
         moveNumber = 1;
     }
 
-    /** Re-applies translated labels after a locale change. */
+    /**
+     * Re-applies translated labels after a locale change.
+     */
     public void refreshLabels() {
         titleLabel.setText(Messages.get("history.title"));
     }

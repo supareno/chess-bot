@@ -40,7 +40,11 @@ public class NewGameDialog extends JDialog {
     private JComboBox<String> difficultyCombo;
     private JPanel colorPanel;
     private JPanel difficultyPanel;
-    
+
+    /**
+     * Creates the new game dialog.
+     * @param parent the parent frame for centering the dialog
+     */
     public NewGameDialog(JFrame parent) {
         super(parent, Messages.get("newgame.title"), true);
 
