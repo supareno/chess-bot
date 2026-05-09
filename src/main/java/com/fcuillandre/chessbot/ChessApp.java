@@ -15,18 +15,43 @@
  */
 package com.fcuillandre.chessbot;
 
-import com.fcuillandre.chessbot.game.ChessGame;
+import com.fcuillandre.chessbot.gui.ChessGUI;
+import com.fcuillandre.chessbot.utils.ChessAppUtils;
+
+import javax.swing.*;
 
 /**
- * Main class to start the Chess application.
+ * Entrypoint for the Chess application.
+ * Initializes the GUI and sets the Look and Feel to match the system's native appearance.
  *
  * @author fcuillandre
  * @version 0.1
  */
 public class ChessApp {
-
+    
     public static void main(String[] args) {
-        ChessGame game = new ChessGame();
-        new com.fcuillandre.chessbot.ui.ChessGameFrame(game);
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            ChessAppUtils.log(e.getMessage());
+        }
+        
+        SwingUtilities.invokeLater(() -> {
+            new ChessGUI();
+        });
+        //
+        ChessAppUtils.log("""
+                      
+                       .__                                               \s
+                  ____ |  |__   ____   ______ ___________  ______ ______ \s
+                _/ ___\\|  |  \\_/ __ \\ /  ___//  ___/\\__  \\ \\____ \\\\____ \\\s
+                \\  \\___|   Y  \\  ___/ \\___ \\ \\___ \\  / __ \\|  |_> >  |_> >
+                 \\___  >___|  /\\___  >____  >____  >(____  /   __/|   __/\s
+                     \\/     \\/     \\/     \\/     \\/      \\/|__|   |__|   \s
+                
+                Made with love by fcuillandre
+                Powered by Java
+                """);
+
     }
 }
